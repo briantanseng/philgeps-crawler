@@ -15,6 +15,13 @@ class PhilGEPSApp {
     this.intervalMinutes = parseInt(process.env.CRAWL_INTERVAL_MINUTES) || 60;
     this.port = process.env.PORT || 3000;
     this.isProduction = process.env.NODE_ENV === 'production';
+    
+    // Crawler state management
+    this.crawlerEnabled = true;
+    this.crawlerJob = null;
+    this.lastCrawl = null;
+    this.nextCrawl = null;
+    this.isCrawling = false;
   }
 
   async initialize() {
@@ -52,6 +59,11 @@ class PhilGEPSApp {
 
     // Serve static files for simple web UI
     this.app.use(express.static('public'));
+    
+    // Redirect root to the table version
+    this.app.get('/', (req, res) => {
+      res.redirect('/index-table.html');
+    });
 
     // Health check endpoint
     this.app.get('/health', (req, res) => {
@@ -66,18 +78,63 @@ class PhilGEPSApp {
     console.log(`Scheduling crawler to run every ${this.intervalMinutes} minutes`);
     console.log(`Cron expression: ${cronExpression}\n`);
 
-    cron.schedule(cronExpression, () => {
-      console.log(`[${new Date().toISOString()}] Starting scheduled crawl...`);
-      this.runCrawl();
+    this.crawlerJob = cron.schedule(cronExpression, () => {
+      if (this.crawlerEnabled && !this.isCrawling) {
+        console.log(`[${new Date().toISOString()}] Starting scheduled crawl...`);
+        this.runCrawl();
+      } else if (!this.crawlerEnabled) {
+        console.log(`[${new Date().toISOString()}] Crawler is disabled, skipping scheduled crawl`);
+      } else {
+        console.log(`[${new Date().toISOString()}] Crawler is already running, skipping scheduled crawl`);
+      }
     });
+    
+    // Calculate next crawl time
+    this.updateNextCrawlTime();
+  }
+  
+  updateNextCrawlTime() {
+    if (this.crawlerEnabled && this.crawlerJob) {
+      const now = new Date();
+      const nextMinute = new Date(now);
+      nextMinute.setMinutes(Math.ceil(now.getMinutes() / this.intervalMinutes) * this.intervalMinutes);
+      nextMinute.setSeconds(0);
+      nextMinute.setMilliseconds(0);
+      this.nextCrawl = nextMinute.toISOString();
+    } else {
+      this.nextCrawl = null;
+    }
   }
 
   async runCrawl() {
+    if (this.isCrawling) {
+      console.log('Crawl already in progress, skipping...');
+      return;
+    }
+    
+    this.isCrawling = true;
+    const startTime = new Date();
+    
     try {
       const stats = await this.crawler.crawlAllOpportunities();
       console.log(`[${new Date().toISOString()}] Crawl completed:`, stats);
+      this.lastCrawl = {
+        timestamp: startTime.toISOString(),
+        status: 'success',
+        stats: stats,
+        duration: Date.now() - startTime.getTime()
+      };
     } catch (error) {
       console.error(`[${new Date().toISOString()}] Crawl failed:`, error.message);
+      this.lastCrawl = {
+        timestamp: startTime.toISOString(),
+        status: 'error',
+        error: error.message,
+        duration: Date.now() - startTime.getTime()
+      };
+    } finally {
+      this.isCrawling = false;
+      this.updateNextCrawlTime();
     }
   }
 
@@ -111,8 +168,13 @@ class PhilGEPSApp {
   }
 }
 
+// Create singleton instance
+const appInstance = new PhilGEPSApp();
+
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const app = new PhilGEPSApp();
-  app.initialize().catch(console.error);
+  appInstance.initialize().catch(console.error);
 }
+
+// Export for use in other modules
+export default appInstance;

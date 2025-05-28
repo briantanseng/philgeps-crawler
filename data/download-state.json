@@ -1,7 +1,7 @@
 {
-  "lastCompletedPage": 10,
+  "lastCompletedPage": 20,
   "totalPages": 1208,
-  "totalOpportunities": 210,
+  "totalOpportunities": 420,
   "startedAt": "2025-05-28T19:29:08.540Z",
   "batches": [
     {
@@ -16,6 +16,19 @@
       "saveErrors": 0,
       "duration": "1712.74",
       "completedAt": "2025-05-28T19:57:45.356Z"
+    },
+    {
+      "startPage": 11,
+      "endPage": 20,
+      "pagesAttempted": 10,
+      "pagesSuccessful": 10,
+      "pagesFailed": 0,
+      "failedPages": [],
+      "opportunities": 210,
+      "saved": 210,
+      "saveErrors": 0,
+      "duration": "1760.91",
+      "completedAt": "2025-05-28T20:27:36.890Z"
     }
   ]
 }

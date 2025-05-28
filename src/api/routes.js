@@ -243,4 +243,91 @@ router.get('/opportunities/export', async (req, res) => {
   }
 });
 
+// Crawler control endpoints
+router.get('/crawler/status', async (req, res) => {
+  try {
+    // Import app instance to access crawler state
+    const app = (await import('../index.js')).default;
+    
+    res.json({
+      success: true,
+      data: {
+        enabled: app.crawlerEnabled,
+        isRunning: app.isCrawling,
+        intervalMinutes: app.intervalMinutes,
+        lastCrawl: app.lastCrawl,
+        nextCrawl: app.nextCrawl
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.post('/crawler/toggle', async (req, res) => {
+  try {
+    const { enabled } = req.body;
+    const app = (await import('../index.js')).default;
+    
+    if (typeof enabled !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        error: 'enabled parameter must be a boolean'
+      });
+    }
+    
+    app.crawlerEnabled = enabled;
+    
+    if (enabled) {
+      app.updateNextCrawlTime();
+      console.log(`[${new Date().toISOString()}] Crawler enabled`);
+    } else {
+      app.nextCrawl = null;
+      console.log(`[${new Date().toISOString()}] Crawler disabled`);
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        enabled: app.crawlerEnabled,
+        message: enabled ? 'Crawler enabled' : 'Crawler disabled'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+router.post('/crawler/run', async (req, res) => {
+  try {
+    const app = (await import('../index.js')).default;
+    
+    if (app.isCrawling) {
+      return res.status(400).json({
+        success: false,
+        error: 'Crawler is already running'
+      });
+    }
+    
+    // Start crawl in background
+    app.runCrawl();
+    
+    res.json({
+      success: true,
+      message: 'Manual crawl started'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;

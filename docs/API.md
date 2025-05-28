@@ -183,6 +183,73 @@ Export search results as a CSV file.
 
 **Response:** CSV file download
 
+### 9. Get Crawler Status
+Get current crawler status and scheduling information.
+
+**Endpoint:** `GET /api/crawler/status`
+
+**Example Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "enabled": true,
+    "isRunning": false,
+    "intervalMinutes": 30,
+    "lastCrawl": "2025-01-29T10:00:00Z",
+    "nextCrawl": "2025-01-29T10:30:00Z"
+  }
+}
+```
+
+### 10. Toggle Crawler
+Enable or disable the automated crawler.
+
+**Endpoint:** `POST /api/crawler/toggle`
+
+**Request Body:**
+```json
+{
+  "enabled": true  // or false to disable
+}
+```
+
+**Example Response:**
+```json
+{
+  "success": true,
+  "message": "Crawler enabled successfully",
+  "data": {
+    "enabled": true,
+    "isRunning": false,
+    "intervalMinutes": 30,
+    "lastCrawl": "2025-01-29T10:00:00Z",
+    "nextCrawl": "2025-01-29T10:30:00Z"
+  }
+}
+```
+
+### 11. Run Crawler Manually
+Trigger an immediate crawler run.
+
+**Endpoint:** `POST /api/crawler/run`
+
+**Example Response:**
+```json
+{
+  "success": true,
+  "message": "Crawler started successfully"
+}
+```
+
+**Error Response (if already running):**
+```json
+{
+  "success": false,
+  "error": "Crawler is already running"
+}
+```
+
 ## Error Responses
 
 All endpoints return errors in the following format:

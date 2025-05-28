@@ -32,6 +32,7 @@ gcloud run deploy philgeps-crawler \
 - **Web UI**: Simple web interface for searching and browsing opportunities
 - **CSV Export**: Export search results to CSV format
 - **Scheduled Crawling**: Automatic crawling at configurable intervals
+- **Crawler Control**: Web-based toggle to enable/disable crawler with manual run option
 - **Docker Ready**: Easy deployment with Docker and Docker Compose
 - **Cloud Ready**: Optimized for Google Cloud Run deployment
 
@@ -116,6 +117,13 @@ This opens an interactive CLI for searching opportunities.
 
 Open http://localhost:3000 in your browser to access the web UI.
 
+Features:
+- Search and filter opportunities
+- View statistics dashboard
+- Control crawler (enable/disable automatic crawling)
+- Manually trigger crawler runs
+- Monitor crawler status and schedule
+
 ## API Endpoints
 
 ### Search Opportunities
@@ -158,6 +166,13 @@ POST /api/crawl/trigger
 GET /api/crawl/history
 ```
 
+### Crawler Control
+```
+GET /api/crawler/status     # Get crawler status and schedule
+POST /api/crawler/toggle    # Enable/disable crawler
+POST /api/crawler/run       # Manually trigger crawler
+```
+
 ## Project Structure
 
 ```
@@ -178,7 +193,8 @@ philgeps-crawler/
 │   ├── ARCHITECTURE.md  # System architecture
 │   ├── DATABASE.md      # Database schema
 │   ├── DEPLOYMENT.md    # Cloud deployment guide
-│   └── DOCKER-QUICKSTART.md # Docker quick start
+│   ├── DOCKER-QUICKSTART.md # Docker quick start
+│   └── CRAWLER_TOGGLE_FEATURE.md # Crawler control documentation
 ├── Dockerfile           # Docker container definition
 ├── docker-compose.yml   # Docker Compose configuration
 └── cloudbuild.yaml      # Google Cloud Build config
@@ -271,6 +287,7 @@ See [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for detailed solutions.
 - 🐳 [Docker Quick Start](docs/DOCKER-QUICKSTART.md) - Docker setup guide
 - 🔧 [Configuration](docs/CONFIGURATION.md) - Environment variables
 - 🕷️ [Crawling Guide](docs/CRAWLING-GUIDE.md) - Page range crawling strategies
+- 🎛️ [Crawler Control](docs/CRAWLER_TOGGLE_FEATURE.md) - Web-based crawler management
 - 🚨 [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
 
 ## License

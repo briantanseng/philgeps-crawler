@@ -1,0 +1,58 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: philgeps-crawler
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    metadata:
+      annotations:
+        # Allow longer timeout for crawling operations
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      # Service account with access to GCS bucket
+      serviceAccountName: philgeps-crawler-sa
+      
+      # Container configuration
+      containers:
+      - image: gcr.io/PROJECT_ID/philgeps-crawler:latest
+        name: philgeps-crawler
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: DATABASE_TYPE
+          value: sqlite3
+        - name: DATABASE_PATH
+          value: /data/philgeps.db
+        - name: PORT
+          value: "8080"
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        # Volume mount for SQLite database
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+      
+      # Volume configuration for GCS
+      volumes:
+      - name: data-volume
+        csi:
+          driver: gcsfuse.run.googleapis.com
+          readOnly: false
+          volumeAttributes:
+            bucketName: YOUR_BUCKET_NAME
+            mountOptions: "implicit-dirs"
+      
+      # Timeout configuration
+      timeoutSeconds: 3600
+      
+  # Traffic configuration
+  traffic:
+  - percent: 100
+    latestRevision: true

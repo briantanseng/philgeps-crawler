@@ -1,0 +1,346 @@
+[
+  {
+    "value": "82",
+    "text": "(Independent City)"
+  },
+  {
+    "value": "1",
+    "text": "Abra"
+  },
+  {
+    "value": "2",
+    "text": "Agusan Del Norte"
+  },
+  {
+    "value": "3",
+    "text": "Agusan Del Sur"
+  },
+  {
+    "value": "4",
+    "text": "Aklan"
+  },
+  {
+    "value": "5",
+    "text": "Albay"
+  },
+  {
+    "value": "6",
+    "text": "Antique"
+  },
+  {
+    "value": "7",
+    "text": "Apayao"
+  },
+  {
+    "value": "8",
+    "text": "Aurora"
+  },
+  {
+    "value": "9",
+    "text": "Basilan"
+  },
+  {
+    "value": "10",
+    "text": "Bataan"
+  },
+  {
+    "value": "11",
+    "text": "Batanes"
+  },
+  {
+    "value": "12",
+    "text": "Batangas"
+  },
+  {
+    "value": "13",
+    "text": "Benguet"
+  },
+  {
+    "value": "14",
+    "text": "Biliran"
+  },
+  {
+    "value": "15",
+    "text": "Bohol"
+  },
+  {
+    "value": "16",
+    "text": "Bukidnon"
+  },
+  {
+    "value": "17",
+    "text": "Bulacan"
+  },
+  {
+    "value": "18",
+    "text": "Cagayan"
+  },
+  {
+    "value": "19",
+    "text": "Camarines Norte"
+  },
+  {
+    "value": "20",
+    "text": "Camarines Sur"
+  },
+  {
+    "value": "21",
+    "text": "Camiguin"
+  },
+  {
+    "value": "22",
+    "text": "Capiz"
+  },
+  {
+    "value": "23",
+    "text": "Catanduanes"
+  },
+  {
+    "value": "24",
+    "text": "Cavite"
+  },
+  {
+    "value": "25",
+    "text": "Cebu"
+  },
+  {
+    "value": "27",
+    "text": "Cotabato"
+  },
+  {
+    "value": "26",
+    "text": "Davao de Oro (Compos. Valley)"
+  },
+  {
+    "value": "28",
+    "text": "Davao Del Norte"
+  },
+  {
+    "value": "29",
+    "text": "Davao Del Sur"
+  },
+  {
+    "value": "87",
+    "text": "Davao Occidental"
+  },
+  {
+    "value": "30",
+    "text": "Davao Oriental"
+  },
+  {
+    "value": "86",
+    "text": "Dinagat Islands"
+  },
+  {
+    "value": "31",
+    "text": "Eastern Samar"
+  },
+  {
+    "value": "32",
+    "text": "Guimaras"
+  },
+  {
+    "value": "33",
+    "text": "Ifugao"
+  },
+  {
+    "value": "34",
+    "text": "Ilocos Norte"
+  },
+  {
+    "value": "35",
+    "text": "Ilocos Sur"
+  },
+  {
+    "value": "36",
+    "text": "Iloilo"
+  },
+  {
+    "value": "37",
+    "text": "Isabela"
+  },
+  {
+    "value": "38",
+    "text": "Kalinga"
+  },
+  {
+    "value": "39",
+    "text": "La Union"
+  },
+  {
+    "value": "40",
+    "text": "Laguna"
+  },
+  {
+    "value": "41",
+    "text": "Lanao Del Norte"
+  },
+  {
+    "value": "42",
+    "text": "Lanao Del Sur"
+  },
+  {
+    "value": "43",
+    "text": "Leyte"
+  },
+  {
+    "value": "44",
+    "text": "Maguindanao"
+  },
+  {
+    "value": "45",
+    "text": "Marinduque"
+  },
+  {
+    "value": "46",
+    "text": "Masbate"
+  },
+  {
+    "value": "47",
+    "text": "Metro Manila"
+  },
+  {
+    "value": "48",
+    "text": "Misamis Occidental"
+  },
+  {
+    "value": "49",
+    "text": "Misamis Oriental"
+  },
+  {
+    "value": "50",
+    "text": "Mountain Province"
+  },
+  {
+    "value": "51",
+    "text": "Negros Occidental"
+  },
+  {
+    "value": "52",
+    "text": "Negros Oriental"
+  },
+  {
+    "value": "53",
+    "text": "Northern Samar"
+  },
+  {
+    "value": "54",
+    "text": "Nueva Ecija"
+  },
+  {
+    "value": "55",
+    "text": "Nueva Vizcaya"
+  },
+  {
+    "value": "56",
+    "text": "Occidental Mindoro"
+  },
+  {
+    "value": "57",
+    "text": "Oriental Mindoro"
+  },
+  {
+    "value": "58",
+    "text": "Palawan"
+  },
+  {
+    "value": "59",
+    "text": "Pampanga"
+  },
+  {
+    "value": "60",
+    "text": "Pangasinan"
+  },
+  {
+    "value": "81",
+    "text": "Philippines"
+  },
+  {
+    "value": "61",
+    "text": "Quezon"
+  },
+  {
+    "value": "62",
+    "text": "Quirino"
+  },
+  {
+    "value": "63",
+    "text": "Rizal"
+  },
+  {
+    "value": "64",
+    "text": "Romblon"
+  },
+  {
+    "value": "65",
+    "text": "Samar"
+  },
+  {
+    "value": "83",
+    "text": "sample province"
+  },
+  {
+    "value": "66",
+    "text": "Sarangani"
+  },
+  {
+    "value": "67",
+    "text": "Siquijor"
+  },
+  {
+    "value": "68",
+    "text": "Sorsogon"
+  },
+  {
+    "value": "69",
+    "text": "South Cotabato"
+  },
+  {
+    "value": "70",
+    "text": "Southern Leyte"
+  },
+  {
+    "value": "88",
+    "text": "Special Geographic Area"
+  },
+  {
+    "value": "71",
+    "text": "Sultan Kudarat"
+  },
+  {
+    "value": "72",
+    "text": "Sulu"
+  },
+  {
+    "value": "73",
+    "text": "Surigao Del Norte"
+  },
+  {
+    "value": "74",
+    "text": "Surigao Del Sur"
+  },
+  {
+    "value": "75",
+    "text": "Tarlac"
+  },
+  {
+    "value": "76",
+    "text": "Tawi-Tawi"
+  },
+  {
+    "value": "77",
+    "text": "Zambales"
+  },
+  {
+    "value": "78",
+    "text": "Zamboanga Del Norte"
+  },
+  {
+    "value": "79",
+    "text": "Zamboanga Del Sur"
+  },
+  {
+    "value": "80",
+    "text": "Zamboanga Sibugay"
+  }
+]

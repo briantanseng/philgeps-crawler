@@ -1,0 +1,674 @@
+[
+  {
+    "value": "157",
+    "text": "Advertising Agency Services"
+  },
+  {
+    "value": "53",
+    "text": "Agricultural Chemicals"
+  },
+  {
+    "value": "31",
+    "text": "Agricultural Machinery and Equipment"
+  },
+  {
+    "value": "125",
+    "text": "Agricultural Products (Seeds, Seedlings, Plants..)"
+  },
+  {
+    "value": "55",
+    "text": "Airconditioning and Airconditioning Systems"
+  },
+  {
+    "value": "56",
+    "text": "Airconditioning Maintenance Services"
+  },
+  {
+    "value": "59",
+    "text": "Aircraft Spare Parts"
+  },
+  {
+    "value": "41",
+    "text": "Ammunitions and Explosives"
+  },
+  {
+    "value": "135",
+    "text": "Animal Feeds"
+  },
+  {
+    "value": "33",
+    "text": "Appliances"
+  },
+  {
+    "value": "151",
+    "text": "Architectural Design"
+  },
+  {
+    "value": "152",
+    "text": "Arts and Crafts Accessories and Supplies"
+  },
+  {
+    "value": "60",
+    "text": "Audio and Visual Equipment"
+  },
+  {
+    "value": "61",
+    "text": "Automation Equipment"
+  },
+  {
+    "value": "62",
+    "text": "Aviation Products"
+  },
+  {
+    "value": "63",
+    "text": "Aviation Services"
+  },
+  {
+    "value": "163",
+    "text": "Bedclothes, Linens and Towels"
+  },
+  {
+    "value": "173",
+    "text": "Beverages"
+  },
+  {
+    "value": "34",
+    "text": "Books, Maps and Other Publications"
+  },
+  {
+    "value": "155",
+    "text": "Cargo Forwarding and Hauling Services"
+  },
+  {
+    "value": "117",
+    "text": "Catering Services"
+  },
+  {
+    "value": "65",
+    "text": "Chemical Detergents"
+  },
+  {
+    "value": "35",
+    "text": "Chemicals and Chemical Products"
+  },
+  {
+    "value": "36",
+    "text": "Communication Equipment"
+  },
+  {
+    "value": "37",
+    "text": "Communication Equipment & Parts and Accessories"
+  },
+  {
+    "value": "66",
+    "text": "Computer Furniture"
+  },
+  {
+    "value": "67",
+    "text": "Construction Equipment"
+  },
+  {
+    "value": "69",
+    "text": "Construction Management Services"
+  },
+  {
+    "value": "68",
+    "text": "Construction Materials and Supplies"
+  },
+  {
+    "value": "42",
+    "text": "Construction Projects"
+  },
+  {
+    "value": "43",
+    "text": "Consulting Services"
+  },
+  {
+    "value": "71",
+    "text": "Corporate Giveaways"
+  },
+  {
+    "value": "118",
+    "text": "Dairy Products"
+  },
+  {
+    "value": "154",
+    "text": "Diagnostic and Laboratory Services"
+  },
+  {
+    "value": "99",
+    "text": "Drugs and Medicines"
+  },
+  {
+    "value": "64",
+    "text": "Editorial, Design, Graphic and Fine Art Services"
+  },
+  {
+    "value": "178",
+    "text": "Education and Training Services"
+  },
+  {
+    "value": "134",
+    "text": "Educational Materials and Supplies"
+  },
+  {
+    "value": "38",
+    "text": "Electrical Supplies"
+  },
+  {
+    "value": "57",
+    "text": "Electrical Systems and Lighting Components"
+  },
+  {
+    "value": "72",
+    "text": "Electronic Parts and Components"
+  },
+  {
+    "value": "73",
+    "text": "Engineering and Laboratory Testing Equipment"
+  },
+  {
+    "value": "74",
+    "text": "Environmental Health/Safety Equipment"
+  },
+  {
+    "value": "156",
+    "text": "Events Management"
+  },
+  {
+    "value": "75",
+    "text": "Fertilizers"
+  },
+  {
+    "value": "177",
+    "text": "Financial and Insurance Services"
+  },
+  {
+    "value": "2",
+    "text": "Fire Fighting & Rescue and Safety Equipment"
+  },
+  {
+    "value": "3",
+    "text": "Fixtures"
+  },
+  {
+    "value": "76",
+    "text": "Flags"
+  },
+  {
+    "value": "133",
+    "text": "Food Processing Equipment"
+  },
+  {
+    "value": "123",
+    "text": "Food Stuff"
+  },
+  {
+    "value": "171",
+    "text": "Freight Forwarder Services"
+  },
+  {
+    "value": "77",
+    "text": "Fuels/Fuel Additives & Lubricants & Anti Corrosive"
+  },
+  {
+    "value": "176",
+    "text": "Funeral and Associated Services"
+  },
+  {
+    "value": "4",
+    "text": "Furniture"
+  },
+  {
+    "value": "5",
+    "text": "Furniture Parts and Accessories"
+  },
+  {
+    "value": "142",
+    "text": "Games and Toys"
+  },
+  {
+    "value": "143",
+    "text": "Gaming Equipment and Paraphernalia"
+  },
+  {
+    "value": "6",
+    "text": "Garments"
+  },
+  {
+    "value": "78",
+    "text": "General Contractor"
+  },
+  {
+    "value": "79",
+    "text": "General Engineering Services"
+  },
+  {
+    "value": "80",
+    "text": "General Merchandise"
+  },
+  {
+    "value": "46",
+    "text": "General Repair and Maintenance Services"
+  },
+  {
+    "value": "81",
+    "text": "Geotechnical Instrumentation"
+  },
+  {
+    "value": "124",
+    "text": "Grocery Items"
+  },
+  {
+    "value": "7",
+    "text": "Guns and Weapons"
+  },
+  {
+    "value": "8",
+    "text": "Hardware and Construction Supplies"
+  },
+  {
+    "value": "82",
+    "text": "Helicopters - Parts"
+  },
+  {
+    "value": "83",
+    "text": "Horizontal Directional Drilling"
+  },
+  {
+    "value": "90",
+    "text": "Hospital / Medical Equipment"
+  },
+  {
+    "value": "84",
+    "text": "Hospital / Medical Equipment Services"
+  },
+  {
+    "value": "145",
+    "text": "Hotel and Lodging and Meeting Facilities"
+  },
+  {
+    "value": "164",
+    "text": "Hydrological Instruments"
+  },
+  {
+    "value": "9",
+    "text": "Industrial Machinery and Equipment"
+  },
+  {
+    "value": "141",
+    "text": "Industrial pumps and compressors"
+  },
+  {
+    "value": "85",
+    "text": "Industrial Safety Equipment"
+  },
+  {
+    "value": "10",
+    "text": "Information Technology"
+  },
+  {
+    "value": "11",
+    "text": "Information Technology Parts & Accessories & Perip"
+  },
+  {
+    "value": "172",
+    "text": "Institutional food services equipment"
+  },
+  {
+    "value": "86",
+    "text": "Internet Services"
+  },
+  {
+    "value": "12",
+    "text": "Investigative Equipment"
+  },
+  {
+    "value": "167",
+    "text": "IT Broadcasting and Telecommunications"
+  },
+  {
+    "value": "13",
+    "text": "Janitorial Equipment"
+  },
+  {
+    "value": "49",
+    "text": "Janitorial Services"
+  },
+  {
+    "value": "30",
+    "text": "Janitorial Supplies"
+  },
+  {
+    "value": "14",
+    "text": "Kitchenware"
+  },
+  {
+    "value": "48",
+    "text": "Laboratory Supplies and Equipment"
+  },
+  {
+    "value": "179",
+    "text": "Landscaping Services"
+  },
+  {
+    "value": "170",
+    "text": "Laundry Services"
+  },
+  {
+    "value": "122",
+    "text": "Lease and Rental of Property or Building"
+  },
+  {
+    "value": "147",
+    "text": "Lifting equipment and accessories"
+  },
+  {
+    "value": "128",
+    "text": "Live Animals (Livestock, Birds, Live fish & etc..)"
+  },
+  {
+    "value": "88",
+    "text": "Machine Tools"
+  },
+  {
+    "value": "126",
+    "text": "Mail and Cargo Transport Services"
+  },
+  {
+    "value": "140",
+    "text": "Mailing Supplies"
+  },
+  {
+    "value": "139",
+    "text": "Marine Transport"
+  },
+  {
+    "value": "89",
+    "text": "Maritime Spare Parts"
+  },
+  {
+    "value": "159",
+    "text": "Market Research Services"
+  },
+  {
+    "value": "16",
+    "text": "Medical and Dental Equipment"
+  },
+  {
+    "value": "15",
+    "text": "Medical Supplies and Laboratory Instrument"
+  },
+  {
+    "value": "91",
+    "text": "Metal Fabrication"
+  },
+  {
+    "value": "153",
+    "text": "Meteorological Equipments and Instruments"
+  },
+  {
+    "value": "92",
+    "text": "Microfilm Equipment"
+  },
+  {
+    "value": "93",
+    "text": "Microfilm Equipment - Supplies and Accesories"
+  },
+  {
+    "value": "94",
+    "text": "Mining Equipment and Supplies"
+  },
+  {
+    "value": "113",
+    "text": "Musical Instrument Parts and Accesories"
+  },
+  {
+    "value": "112",
+    "text": "Musical Instruments"
+  },
+  {
+    "value": "95",
+    "text": "Navigation Equipment"
+  },
+  {
+    "value": "162",
+    "text": "Newspapers"
+  },
+  {
+    "value": "17",
+    "text": "Office Equipment"
+  },
+  {
+    "value": "18",
+    "text": "Office Equipment Parts and Accessories"
+  },
+  {
+    "value": "1",
+    "text": "Office Equipment Supplies and Consumables"
+  },
+  {
+    "value": "19",
+    "text": "Office Supplies and Devices"
+  },
+  {
+    "value": "96",
+    "text": "Oil/Heat Chemical Resistant Rubber"
+  },
+  {
+    "value": "97",
+    "text": "Ordnance Products"
+  },
+  {
+    "value": "28",
+    "text": "Packaging Supplies and Materials"
+  },
+  {
+    "value": "183",
+    "text": "Packed Food Distributor"
+  },
+  {
+    "value": "180",
+    "text": "Paper Materials and Products"
+  },
+  {
+    "value": "58",
+    "text": "Personal Care Products"
+  },
+  {
+    "value": "98",
+    "text": "Pest Control Products"
+  },
+  {
+    "value": "131",
+    "text": "Pest Control Services"
+  },
+  {
+    "value": "20",
+    "text": "Photographic Equipment"
+  },
+  {
+    "value": "21",
+    "text": "Photographic Parts, Supplies and Accessories"
+  },
+  {
+    "value": "168",
+    "text": "Photography Services"
+  },
+  {
+    "value": "100",
+    "text": "Plastic Products"
+  },
+  {
+    "value": "101",
+    "text": "Power Generation and Distribution Machinery"
+  },
+  {
+    "value": "120",
+    "text": "Preserved or Processed Foods"
+  },
+  {
+    "value": "144",
+    "text": "Print and Broadcast and Aerial Advertising"
+  },
+  {
+    "value": "29",
+    "text": "Printing Services"
+  },
+  {
+    "value": "51",
+    "text": "Printing Supplies"
+  },
+  {
+    "value": "158",
+    "text": "Public Relations Programs or Services"
+  },
+  {
+    "value": "160",
+    "text": "Purses, handbags and bags"
+  },
+  {
+    "value": "175",
+    "text": "Pyrotechnics and Fireworks"
+  },
+  {
+    "value": "22",
+    "text": "Quartermaster Items"
+  },
+  {
+    "value": "102",
+    "text": "Radiological/Diagnostic Equipment"
+  },
+  {
+    "value": "165",
+    "text": "Real Estate Developement and Maintenance"
+  },
+  {
+    "value": "150",
+    "text": "Reproduction Services"
+  },
+  {
+    "value": "149",
+    "text": "Rice Milling Services"
+  },
+  {
+    "value": "103",
+    "text": "Safety and Occupational Products"
+  },
+  {
+    "value": "130",
+    "text": "Sale of Property or Building"
+  },
+  {
+    "value": "47",
+    "text": "Security Services"
+  },
+  {
+    "value": "119",
+    "text": "Security Surveillance and Detection Equipment"
+  },
+  {
+    "value": "23",
+    "text": "Services"
+  },
+  {
+    "value": "136",
+    "text": "Signage and Accessories"
+  },
+  {
+    "value": "114",
+    "text": "Sporting Goods"
+  },
+  {
+    "value": "104",
+    "text": "Structured Cabling"
+  },
+  {
+    "value": "105",
+    "text": "Sub-station Contractors"
+  },
+  {
+    "value": "107",
+    "text": "Surveying Instruments"
+  },
+  {
+    "value": "106",
+    "text": "Surveying Services"
+  },
+  {
+    "value": "108",
+    "text": "Systems Integration"
+  },
+  {
+    "value": "109",
+    "text": "Telecommunications Engineering"
+  },
+  {
+    "value": "110",
+    "text": "Telecommunications Provider"
+  },
+  {
+    "value": "24",
+    "text": "Textiles"
+  },
+  {
+    "value": "166",
+    "text": "Timepieces and Jewelry and Gemstone Products"
+  },
+  {
+    "value": "129",
+    "text": "Tokens and Awards"
+  },
+  {
+    "value": "111",
+    "text": "Traffic Control Systems"
+  },
+  {
+    "value": "116",
+    "text": "Transmission and Distribution Lines"
+  },
+  {
+    "value": "115",
+    "text": "Transportation and Communications Services"
+  },
+  {
+    "value": "161",
+    "text": "Travel, Food, Lodging and Entertainment Services"
+  },
+  {
+    "value": "25",
+    "text": "Vehicle Parts and Accessories"
+  },
+  {
+    "value": "52",
+    "text": "Vehicle Repair and Maintenance"
+  },
+  {
+    "value": "26",
+    "text": "Vehicles"
+  },
+  {
+    "value": "54",
+    "text": "Veterinary Products and Supplies"
+  },
+  {
+    "value": "127",
+    "text": "Video Production Services"
+  },
+  {
+    "value": "174",
+    "text": "Waste Management and Recycling"
+  },
+  {
+    "value": "138",
+    "text": "Water and Waste Water Treatment Supply & Disposal"
+  },
+  {
+    "value": "137",
+    "text": "Water Service Connection Materials/Fittings"
+  },
+  {
+    "value": "146",
+    "text": "Well Drilling and Construction Services"
+  }
+]

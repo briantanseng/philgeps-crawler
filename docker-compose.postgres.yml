@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: philgeps
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  philgeps-crawler:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Core settings
+      - NODE_ENV=development
+      - PORT=8080
+      - PHILGEPS_BASE_URL=https://notices.philgeps.gov.ph/GEPSNONPILOT/Tender/SplashOpportunitiesSearchUI.aspx?menuIndex=3&ClickFrom=OpenOpp&Result=3
+      
+      # Database settings (PostgreSQL)
+      - DATABASE_TYPE=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=philgeps
+      
+      # Crawler settings
+      - CRAWL_INTERVAL_MINUTES=60
+      - MAX_CONCURRENT_REQUESTS=5
+      - REQUEST_DELAY_MS=1500
+      - MAX_PAGES_TO_CRAWL=20
+      - RUN_INITIAL_CRAWL=false
+      - CRAWLER_TIMEOUT_SECONDS=3600
+      
+      # Puppeteer settings
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      
+      # API settings
+      - API_RATE_LIMIT_WINDOW=15
+      - API_RATE_LIMIT_MAX_REQUESTS=100
+      - CORS_ORIGINS=*
+      
+      # Feature flags
+      - ENABLE_FULL_CRAWL=true
+      - ENABLE_SCHEDULED_CRAWL=true
+      - ENABLE_API=true
+      - ENABLE_WEB_UI=true
+      
+      # Performance
+      - SEARCH_RESULTS_LIMIT=1000
+      - EXPORT_CSV_LIMIT=5000
+      
+      # Logging
+      - LOG_LEVEL=info
+      - LOG_FORMAT=simple
+      - DEBUG=false
+      - FORCE_COLORS=true
+      
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:

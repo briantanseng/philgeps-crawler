@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhilGEPS Opportunity Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-form {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #1e3a8a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e40af;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .statistics-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .statistics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .statistics-header h2 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .last-update {
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .stat-card.highlight {
+            background: #dbeafe;
+            border-color: #60a5fa;
+        }
+        
+        .stat-card.highlight .stat-value {
+            color: #1d4ed8;
+        }
+        
+        .stat-trend {
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .trend-up {
+            color: #10b981;
+        }
+        
+        .trend-down {
+            color: #ef4444;
+        }
+        
+        .additional-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .additional-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 6px;
+        }
+        
+        .additional-stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .additional-stat-value {
+            color: #1e3a8a;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .opportunity-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s;
+        }
+        
+        .opportunity-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .opportunity-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+        
+        .opportunity-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            font-size: 0.9rem;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: #6b7280;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+        
+        .tag-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .tag-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .tag-success {
+            background-color: #d1fae5;
+            color: #064e3b;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding: 20px 0;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background-color: #f3f4f6;
+            border-color: #1e3a8a;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination .page-info {
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+        
+        .pagination .page-number {
+            min-width: 40px;
+        }
+        
+        .pagination .page-number.active {
+            background-color: #1e3a8a;
+            color: white;
+            border-color: #1e3a8a;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>PhilGEPS Opportunity Search</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="statistics-section">
+            <div class="statistics-header">
+                <h2>📊 System Statistics</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="last-update" id="lastUpdate">Last updated: Never</div>
+                    <button type="button" class="btn-secondary" style="padding: 5px 10px; font-size: 0.85rem;" onclick="refreshStatistics()">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card highlight">
+                    <div class="stat-value" id="activeOpportunities">-</div>
+                    <div class="stat-label">Active Opportunities</div>
+                    <div class="stat-trend trend-up" id="activeTrend" style="display: none;">
+                        <span>↑</span>
+                        <span id="activeTrendValue">0</span>
+                        <span>new today</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalOpportunities">-</div>
+                    <div class="stat-label">Total Opportunities</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCategories">-</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalEntities">-</div>
+                    <div class="stat-label">Procuring Entities</div>
+                </div>
+            </div>
+            
+            <div class="additional-stats" id="additionalStats" style="display: none;">
+                <div class="additional-stat">
+                    <span class="additional-stat-label">Closing Today</span>
+                    <span class="additional-stat-value" id="closingToday">0</span>
+                </div>
+                <div class="additional-stat">
+                    <span class="additional-stat-label">Closing This Week</span>
+                    <span class="additional-stat-value" id="closingThisWeek">0</span>
+                </div>
+                <div class="additional-stat">
+                    <span class="additional-stat-label">Total Budget (Active)</span>
+                    <span class="additional-stat-value" id="totalBudget">₱0</span>
+                </div>
+                <div class="additional-stat">
+                    <span class="additional-stat-label">Average Budget</span>
+                    <span class="additional-stat-value" id="averageBudget">₱0</span>
+                </div>
+                <div class="additional-stat">
+                    <span class="additional-stat-label">Most Active Category</span>
+                    <span class="additional-stat-value" id="topCategory">-</span>
+                </div>
+                <div class="additional-stat">
+                    <span class="additional-stat-label">Most Active Entity</span>
+                    <span class="additional-stat-value" id="topEntity">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2>Search Opportunities</h2>
+            <form class="search-form" id="searchForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="searchQuery">Keywords</label>
+                        <input type="text" id="searchQuery" placeholder="Enter keywords...">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="areaOfDelivery">Area of Delivery</label>
+                        <select id="areaOfDelivery">
+                            <option value="">All Areas</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="minBudget">Min Budget (PHP)</label>
+                        <input type="number" id="minBudget" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="maxBudget">Max Budget (PHP)</label>
+                        <input type="number" id="maxBudget" placeholder="Any">
+                    </div>
+                    <div class="form-group">
+                        <label for="activeOnly">Status</label>
+                        <select id="activeOnly">
+                            <option value="true">Active Only</option>
+                            <option value="false">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Search</button>
+                    <button type="button" class="btn-secondary" onclick="exportResults()">Export CSV</button>
+                    <button type="button" class="btn-secondary" onclick="triggerCrawl()">Manual Crawl</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <span id="resultCount"></span>
+            </div>
+            <div id="results">
+                <div class="no-results">Enter search criteria and click Search to view opportunities.</div>
+            </div>
+            <div id="pagination" class="pagination" style="display: none;">
+                <button id="prevBtn" onclick="changePage(-1)">Previous</button>
+                <div id="pageNumbers"></div>
+                <button id="nextBtn" onclick="changePage(1)">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        
+        // Pagination state
+        let currentPage = 1;
+        let totalPages = 1;
+        let itemsPerPage = 20;
+        let currentSearchParams = null;
+        
+        // Load initial data
+        async function loadInitialData() {
+            // Load statistics
+            try {
+                const statsRes = await fetch(`${API_BASE}/statistics`);
+                const stats = await statsRes.json();
+                if (stats.success) {
+                    updateStatistics(stats.data);
+                }
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+            }
+            
+            // Load categories
+            try {
+                const catRes = await fetch(`${API_BASE}/categories`);
+                const categories = await catRes.json();
+                if (categories.success) {
+                    populateCategories(categories.data);
+                }
+            } catch (error) {
+                console.error('Failed to load categories:', error);
+            }
+            
+            // Load areas
+            try {
+                const areaRes = await fetch(`${API_BASE}/areas`);
+                const areas = await areaRes.json();
+                if (areas.success) {
+                    populateAreas(areas.data);
+                }
+            } catch (error) {
+                console.error('Failed to load areas:', error);
+            }
+        }
+        
+        function updateStatistics(stats) {
+            // Update main statistics
+            document.getElementById('activeOpportunities').textContent = formatNumber(stats.active || 0);
+            document.getElementById('totalOpportunities').textContent = formatNumber(stats.total || 0);
+            document.getElementById('totalCategories').textContent = formatNumber(stats.categories || 0);
+            document.getElementById('totalEntities').textContent = formatNumber(stats.entities || 0);
+            
+            // Update last update time
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+            
+            // Show additional statistics if available
+            if (stats.additional) {
+                document.getElementById('additionalStats').style.display = 'grid';
+                
+                // Update additional stats
+                if (stats.additional.closingToday !== undefined) {
+                    document.getElementById('closingToday').textContent = formatNumber(stats.additional.closingToday);
+                }
+                if (stats.additional.closingThisWeek !== undefined) {
+                    document.getElementById('closingThisWeek').textContent = formatNumber(stats.additional.closingThisWeek);
+                }
+                if (stats.additional.totalBudget !== undefined) {
+                    document.getElementById('totalBudget').textContent = formatCurrency(stats.additional.totalBudget);
+                }
+                if (stats.additional.averageBudget !== undefined) {
+                    document.getElementById('averageBudget').textContent = formatCurrency(stats.additional.averageBudget);
+                }
+                if (stats.additional.topCategory) {
+                    document.getElementById('topCategory').textContent = stats.additional.topCategory;
+                }
+                if (stats.additional.topEntity) {
+                    document.getElementById('topEntity').textContent = stats.additional.topEntity;
+                }
+                
+                // Show trend if available
+                if (stats.additional.newToday > 0) {
+                    const trendEl = document.getElementById('activeTrend');
+                    trendEl.style.display = 'flex';
+                    document.getElementById('activeTrendValue').textContent = stats.additional.newToday;
+                }
+            }
+        }
+        
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-PH', {
+                style: 'currency',
+                currency: 'PHP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        function populateCategories(categories) {
+            const select = document.getElementById('category');
+            select.innerHTML = '<option value="">All Categories</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+        }
+        
+        function populateAreas(areas) {
+            const select = document.getElementById('areaOfDelivery');
+            select.innerHTML = '<option value="">All Areas</option>';
+            areas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area;
+                option.textContent = area;
+                select.appendChild(option);
+            });
+        }
+        
+        // Search functionality
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            currentPage = 1; // Reset to first page on new search
+            await performSearch();
+        });
+        
+        async function performSearch(page = 1) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+            
+            currentSearchParams = new URLSearchParams({
+                q: document.getElementById('searchQuery').value,
+                category: document.getElementById('category').value,
+                areaOfDelivery: document.getElementById('areaOfDelivery').value,
+                minBudget: document.getElementById('minBudget').value,
+                maxBudget: document.getElementById('maxBudget').value,
+                activeOnly: document.getElementById('activeOnly').value,
+                limit: itemsPerPage,
+                offset: (page - 1) * itemsPerPage
+            });
+            
+            try {
+                const response = await fetch(`${API_BASE}/opportunities/search?${currentSearchParams}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentPage = page;
+                    totalPages = Math.ceil(data.count / itemsPerPage);
+                    displayResults(data.data);
+                    document.getElementById('resultCount').textContent = `${data.count} results found`;
+                    updatePagination();
+                } else {
+                    resultsDiv.innerHTML = '<div class="no-results">Search failed. Please try again.</div>';
+                    document.getElementById('pagination').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsDiv.innerHTML = '<div class="no-results">An error occurred. Please try again.</div>';
+                document.getElementById('pagination').style.display = 'none';
+            }
+        }
+        
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                performSearch(newPage);
+            }
+        }
+        
+        function goToPage(page) {
+            if (page >= 1 && page <= totalPages) {
+                performSearch(page);
+            }
+        }
+        
+        function updatePagination() {
+            const paginationDiv = document.getElementById('pagination');
+            const pageNumbersDiv = document.getElementById('pageNumbers');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (totalPages <= 1) {
+                paginationDiv.style.display = 'none';
+                return;
+            }
+            
+            paginationDiv.style.display = 'flex';
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+            
+            // Generate page numbers
+            pageNumbersDiv.innerHTML = '';
+            
+            // Always show first page
+            if (currentPage > 3) {
+                pageNumbersDiv.innerHTML += `<button class="page-number" onclick="goToPage(1)">1</button>`;
+                if (currentPage > 4) {
+                    pageNumbersDiv.innerHTML += `<span class="page-info">...</span>`;
+                }
+            }
+            
+            // Show pages around current page
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                const active = i === currentPage ? 'active' : '';
+                pageNumbersDiv.innerHTML += `<button class="page-number ${active}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            // Always show last page
+            if (currentPage < totalPages - 2) {
+                if (currentPage < totalPages - 3) {
+                    pageNumbersDiv.innerHTML += `<span class="page-info">...</span>`;
+                }
+                pageNumbersDiv.innerHTML += `<button class="page-number" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+        }
+        
+        function displayResults(opportunities) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (opportunities.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-results">No opportunities found matching your criteria.</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = opportunities.map(opp => {
+                const tags = [];
+                if (opp.is_closing_soon) {
+                    tags.push('<span class="tag tag-warning">Closing Soon</span>');
+                }
+                if (opp.is_expired) {
+                    tags.push('<span class="tag tag-danger">Expired</span>');
+                } else {
+                    tags.push('<span class="tag tag-success">Active</span>');
+                }
+                
+                return `
+                    <div class="opportunity-card">
+                        <div class="opportunity-title">${opp.title}</div>
+                        <div>${tags.join(' ')}</div>
+                        <div class="opportunity-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Reference:</span> ${opp.reference_number}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Entity:</span> ${opp.procuring_entity}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Budget:</span> ${opp.formatted_budget}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Category:</span> ${opp.category || 'N/A'}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Closing:</span> ${new Date(opp.closing_date).toLocaleDateString()} (${opp.days_until_closing} days)
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function exportResults() {
+            if (!currentSearchParams) {
+                alert('Please perform a search first before exporting.');
+                return;
+            }
+            
+            // Remove pagination params for export
+            const exportParams = new URLSearchParams(currentSearchParams);
+            exportParams.delete('limit');
+            exportParams.delete('offset');
+            
+            window.location.href = `${API_BASE}/opportunities/export?${exportParams}`;
+        }
+        
+        async function triggerCrawl() {
+            const defaultPages = confirm('Start a manual crawl?\n\nClick OK to crawl default pages.\nClick Cancel to specify a custom page range.');
+            
+            let startPage = null;
+            let endPage = null;
+            
+            if (!defaultPages) {
+                const range = prompt('Enter page range to crawl:\n\nExamples:\n- "50" to crawl pages 1-50\n- "10-20" to crawl pages 10-20\n\nLeave empty to cancel.');
+                
+                if (!range) {
+                    return;
+                }
+                
+                // Parse the range
+                if (range.includes('-')) {
+                    const parts = range.split('-');
+                    startPage = parseInt(parts[0]);
+                    endPage = parseInt(parts[1]);
+                } else {
+                    endPage = parseInt(range);
+                }
+                
+                if ((startPage && isNaN(startPage)) || (endPage && isNaN(endPage))) {
+                    alert('Invalid page range. Please enter numbers only.');
+                    return;
+                }
+            }
+            
+            try {
+                const body = {};
+                if (startPage) body.startPage = startPage;
+                if (endPage) body.endPage = endPage;
+                
+                const response = await fetch(`${API_BASE}/crawl/trigger`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(data.message + '\n\nCheck back in a few minutes for new data.');
+                } else {
+                    alert('Failed to start crawl: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Crawl trigger error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+        
+        // Function to refresh statistics
+        async function refreshStatistics() {
+            try {
+                const statsRes = await fetch(`${API_BASE}/statistics`);
+                const stats = await statsRes.json();
+                if (stats.success) {
+                    updateStatistics(stats.data);
+                }
+            } catch (error) {
+                console.error('Failed to refresh statistics:', error);
+            }
+        }
+        
+        // Auto-refresh statistics every 30 seconds
+        let statsRefreshInterval;
+        function startAutoRefresh() {
+            statsRefreshInterval = setInterval(refreshStatistics, 30000);
+        }
+        
+        function stopAutoRefresh() {
+            if (statsRefreshInterval) {
+                clearInterval(statsRefreshInterval);
+            }
+        }
+        
+        // Load initial data when page loads
+        loadInitialData();
+        
+        // Start auto-refresh
+        startAutoRefresh();
+        
+        // Stop auto-refresh when page is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+                refreshStatistics(); // Refresh immediately when page becomes visible
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "lastCompletedPage": 10,
+  "totalPages": 1208,
+  "totalOpportunities": 210,
+  "startedAt": "2025-05-28T19:29:08.540Z",
+  "batches": [
+    {
+      "startPage": 1,
+      "endPage": 10,
+      "pagesAttempted": 10,
+      "pagesSuccessful": 10,
+      "pagesFailed": 0,
+      "failedPages": [],
+      "opportunities": 210,
+      "saved": 210,
+      "saveErrors": 0,
+      "duration": "1712.74",
+      "completedAt": "2025-05-28T19:57:45.356Z"
+    }
+  ]
+}

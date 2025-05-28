@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  philgeps-crawler:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      # Core settings
+      - NODE_ENV=development
+      - PORT=8080
+      - PHILGEPS_BASE_URL=https://notices.philgeps.gov.ph/GEPSNONPILOT/Tender/SplashOpportunitiesSearchUI.aspx?menuIndex=3&ClickFrom=OpenOpp&Result=3
+      - DATABASE_PATH=./data/philgeps.db
+      
+      # Crawler settings
+      - CRAWL_INTERVAL_MINUTES=60
+      - MAX_CONCURRENT_REQUESTS=5
+      - REQUEST_DELAY_MS=1500
+      - MAX_PAGES_TO_CRAWL=20
+      - RUN_INITIAL_CRAWL=false
+      - CRAWLER_TIMEOUT_SECONDS=3600
+      
+      # Puppeteer settings (using Docker's Chromium)
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      
+      # API settings
+      - API_RATE_LIMIT_WINDOW=15
+      - API_RATE_LIMIT_MAX_REQUESTS=100
+      - CORS_ORIGINS=*
+      
+      # Feature flags
+      - ENABLE_FULL_CRAWL=true
+      - ENABLE_SCHEDULED_CRAWL=true
+      - ENABLE_API=true
+      - ENABLE_WEB_UI=true
+      
+      # Performance
+      - SEARCH_RESULTS_LIMIT=1000
+      - EXPORT_CSV_LIMIT=5000
+      
+      # Logging
+      - LOG_LEVEL=info
+      - LOG_FORMAT=simple
+      - DEBUG=false
+      - FORCE_COLORS=true
+      
+    volumes:
+      # Mount data directory for persistent storage in development
+      - ./data:/app/data
+      # Optionally mount .env for easier configuration
+      # - ./.env:/app/.env:ro
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M

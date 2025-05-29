@@ -20,6 +20,9 @@
     "test:integration": "jest --testPathPattern=tests/integration",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:coverage": "playwright test coverage.spec.ts",
     "test:coverage": "jest --coverage",
     "test:all": "npm run test:coverage && npm run test:e2e"
   },

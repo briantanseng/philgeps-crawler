@@ -20,7 +20,11 @@ A modern Next.js application for searching and crawling Philippine Government El
 - ⏱️ **Days Until Closing** - Countdown display for each opportunity
 
 ### ITB Details & Expansion
-- 📄 **Expandable Rows** - Click to expand rows with ITB details using TanStack Table
+- 📄 **Expandable Rows** - Interactive rows with smooth animations
+  - Visual arrow indicator (▶/▼) shows expandable rows
+  - "ITB" badge indicates rows with available details
+  - Smooth slide-in animation when expanding/collapsing
+  - State persists during pagination
 - 📋 **Comprehensive ITB Information** including:
   - Solicitation details and procurement mode
   - Funding source and delivery period
@@ -31,9 +35,15 @@ A modern Next.js application for searching and crawling Philippine Government El
   - BAC (Bids and Awards Committee) information
   - Eligibility requirements and descriptions
   - Direct links to PhilGEPS pages
+- 🔄 **Integrated ITB Crawling** - Automatic ITB details extraction during main crawl
 
 ### Crawler Management
-- 🤖 **Automated Background Crawler** - Scheduled crawling with configurable intervals
+- 🤖 **Enhanced Crawler v2.0** - Intelligent crawling with ITB integration
+  - Automatic ITB details extraction for each opportunity
+  - Batch processing with configurable batch size
+  - Retry logic with exponential backoff
+  - State management for resume capability
+  - Comprehensive error logging and recovery
 - 🎛️ **Web-based Crawler Control Panel**:
   - Enable/disable crawler with toggle switch
   - Manual crawl triggering with "Run Now" button
@@ -42,7 +52,9 @@ A modern Next.js application for searching and crawling Philippine Government El
 - 📊 **Crawl History & Metrics**:
   - Last crawl timestamp and duration
   - Opportunities found, new, and updated counts
+  - ITB details fetched count
   - Error tracking and status reporting
+  - Success rate and performance metrics
 
 ### Technical Features
 - ⚡ **Next.js 14 App Router** - Modern React framework with server components
@@ -141,9 +153,16 @@ CRAWL_INTERVAL_MINUTES=60         # How often to run crawler
 MAX_PAGES_TO_CRAWL=10            # Pages per crawl run
 REQUEST_DELAY_MS=2000            # Delay between requests
 CRAWLER_TIMEOUT_SECONDS=300      # Overall timeout
-FETCH_ITB_DETAILS=true           # Fetch detailed ITB info
-START_FROM_PAGE=1                # Starting page number
-PAGES_TO_CRAWL=5                 # Number of pages to crawl
+
+# Enhanced Crawler Settings
+BATCH_SIZE=10                    # Process opportunities in batches
+MAX_RETRIES=3                    # Retry failed requests
+BASE_DELAY=2000                  # Base delay between requests (ms)
+MAX_JITTER=1000                  # Random jitter added to delays
+ITB_FETCH_DELAY=1500             # Delay between ITB detail fetches
+ITB_MAX_JITTER=500               # Jitter for ITB fetches
+PAGE_CRAWL_TIMEOUT=60000         # Timeout for page crawl (ms)
+ITB_CRAWL_TIMEOUT=30000          # Timeout for ITB details (ms)
 
 # Development
 NODE_ENV=development
@@ -165,10 +184,12 @@ npm run test:coverage      # Generate coverage report
 
 # Crawler Operations
 npm run background:crawler  # Start background crawler service
-npm run crawl              # Run one-time crawl
-npm run crawl:all          # Crawl all pages with ITB details
-npm run crawl:resume       # Resume previous crawl from saved state
-npm run crawl:clean        # Clear state and start fresh crawl
+npm run crawl              # Run one-time crawl (first page only)
+npm run crawl:all          # Enhanced crawler with ITB details extraction
+npm run crawl:all 50       # Crawl first 50 pages
+npm run crawl:all 10 20    # Crawl pages 10-20
+npm run crawl:resume       # Resume interrupted crawl from saved state
+npm run crawl:clean        # Clear crawler state and start fresh
 npm run migrate            # Run database migrations
 
 # Code Quality

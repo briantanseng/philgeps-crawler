@@ -250,6 +250,50 @@ class PuppeteerScraper {
     return opportunities;
   }
 
+  // Crawl a single page
+  async crawlPage(pageNumber) {
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    
+    const opportunities = [];
+    
+    try {
+      const page = await browser.newPage();
+      await page.setViewport({ width: 1280, height: 800 });
+      
+      console.log(`Opening search page...`);
+      await page.goto(this.searchUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+      
+      // Navigate to the specific page if not page 1
+      if (pageNumber > 1) {
+        console.log(`Navigating to page ${pageNumber}...`);
+        const navigated = await this.navigateToPage(page, pageNumber);
+        if (!navigated) {
+          console.log(`Failed to navigate to page ${pageNumber}`);
+          return opportunities;
+        }
+        await this.delay(this.requestDelay);
+      }
+      
+      // Extract opportunities from the current page
+      const html = await page.content();
+      const $ = cheerio.load(html);
+      const pageOpportunities = this.extractOpportunitiesFromPage($);
+      
+      opportunities.push(...pageOpportunities);
+      
+    } catch (error) {
+      console.error(`Error crawling page ${pageNumber}:`, error);
+      throw error;
+    } finally {
+      if (browser) await browser.close();
+    }
+    
+    return opportunities;
+  }
+  
   // Backward compatibility
   async crawlAllPages(maxPages = 100) {
     return this.crawlPageRange(1, maxPages);
@@ -444,7 +488,7 @@ class PuppeteerScraper {
           source_url: this.searchUrl,
           detail_url: href.startsWith('http') ? href : `https://notices.philgeps.gov.ph/GEPSNONPILOT/Tender/${href}`,
           // RFQ details - to be populated from detail page if needed
-          rfq_number: null,
+          rfq_solicitation_number: null,
           delivery_period: null,
           payment_terms: null,
           procurement_mode: null,

@@ -1,16 +1,42 @@
 import db from './database.js';
 
 class Opportunity {
+  // Get valid column names from the schema
+  static getValidColumns() {
+    if (!this._validColumns) {
+      const tableInfo = db.pragma('table_info(opportunities)');
+      this._validColumns = tableInfo.map(col => col.name);
+    }
+    return this._validColumns;
+  }
+  
+  // Sanitize data to only include valid columns
+  static sanitizeData(data) {
+    const validColumns = this.getValidColumns();
+    const sanitized = {};
+    
+    for (const [key, value] of Object.entries(data)) {
+      if (validColumns.includes(key)) {
+        sanitized[key] = value;
+      }
+    }
+    
+    return sanitized;
+  }
+  
   static async upsert(data) {
+    // Sanitize the data to only include valid columns
+    const sanitizedData = this.sanitizeData(data);
+    
     const existingStmt = db.prepare('SELECT id FROM opportunities WHERE reference_number = ?');
-    const existing = existingStmt.get(data.reference_number);
+    const existing = existingStmt.get(sanitizedData.reference_number);
     
     let isNew = false;
     let isUpdated = false;
     
     if (existing) {
       // Update existing record
-      const updateFields = Object.keys(data)
+      const updateFields = Object.keys(sanitizedData)
         .filter(key => key !== 'reference_number')
         .map(key => `${key} = @${key}`)
         .join(', ');
@@ -21,19 +47,19 @@ class Opportunity {
         WHERE reference_number = @reference_number
       `);
       
-      updateStmt.run(data);
+      updateStmt.run(sanitizedData);
       isUpdated = true;
     } else {
       // Insert new record
-      const fields = Object.keys(data).join(', ');
-      const placeholders = Object.keys(data).map(key => `@${key}`).join(', ');
+      const fields = Object.keys(sanitizedData).join(', ');
+      const placeholders = Object.keys(sanitizedData).map(key => `@${key}`).join(', ');
       
       const insertStmt = db.prepare(`
         INSERT INTO opportunities (${fields}) 
         VALUES (${placeholders})
       `);
       
-      insertStmt.run(data);
+      insertStmt.run(sanitizedData);
       isNew = true;
     }
     

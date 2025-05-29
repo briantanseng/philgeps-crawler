@@ -15,7 +15,7 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
     areaOfDelivery: '',
     minBudget: '',
     maxBudget: '',
-    activeOnly: 'true'
+    activeOnly: 'false'
   });
 
   useEffect(() => {
@@ -62,6 +62,17 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
   const exportResults = () => {
     const params = new URLSearchParams(formData);
     window.location.href = `/api/opportunities/export?${params}`;
+  };
+
+  const clearForm = () => {
+    setFormData({
+      q: '',
+      category: '',
+      areaOfDelivery: '',
+      minBudget: '',
+      maxBudget: '',
+      activeOnly: 'false'
+    });
   };
 
   return (
@@ -164,8 +175,8 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="true">Active Only</option>
               <option value="false">All</option>
+              <option value="true">Active Only</option>
             </select>
           </div>
         </div>
@@ -179,8 +190,15 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
           </button>
           <button
             type="button"
+            onClick={clearForm}
+            className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
             onClick={exportResults}
-            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+            className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
           >
             Export CSV
           </button>

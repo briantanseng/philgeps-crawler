@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server';
-import { SearchService } from '@/lib/services/searchService';
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function GET() {
   try {
-    const searchService = new SearchService();
-    const categories = await searchService.getCategories();
+    // Read categories from JSON file
+    const categoriesPath = path.join(process.cwd(), 'data', 'philgeps-categories.json');
+    const categoriesData = await fs.readFile(categoriesPath, 'utf-8');
+    const categories = JSON.parse(categoriesData);
+    
+    // Extract just the text values for the dropdown
+    const categoryNames = categories.map((cat: { value: string; text: string }) => cat.text).sort();
     
     return NextResponse.json({
       success: true,
-      count: categories.length,
-      data: categories
+      count: categoryNames.length,
+      data: categoryNames
     });
   } catch (error: any) {
     console.error('Categories error:', error);

@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable experimental features if needed
-  experimental: {
-    // instrumentationHook: true, // For background jobs
-  },
-  
   // Disable strict mode in development to avoid double renders
   reactStrictMode: false,
   
@@ -20,6 +15,13 @@ const nextConfig = {
     CRAWL_INTERVAL_MINUTES: process.env.CRAWL_INTERVAL_MINUTES || '60',
     MAX_PAGES_TO_CRAWL: process.env.MAX_PAGES_TO_CRAWL || '10',
     REQUEST_DELAY_MS: process.env.REQUEST_DELAY_MS || '2000',
+  },
+
+  // Turbopack is now stable, configuration moved to top level
+  turbopack: {
+    resolveAlias: {
+      // Add any necessary aliases here
+    },
   },
 
   // Webpack configuration for database drivers

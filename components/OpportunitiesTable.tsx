@@ -32,7 +32,7 @@ export default function OpportunitiesTable({ data, loading }: OpportunitiesTable
         id: 'expander',
         header: () => null,
         cell: ({ row }) => {
-          if (!row.original.hasItbDetails) return null;
+          if (!row.original.hasItbDetails && !row.original.hasRfqDetails) return null;
           return (
             <button
               onClick={row.getToggleExpandedHandler()}
@@ -141,7 +141,7 @@ export default function OpportunitiesTable({ data, loading }: OpportunitiesTable
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    getRowCanExpand: (row) => row.original.hasItbDetails,
+    getRowCanExpand: (row) => row.original.hasItbDetails || row.original.hasRfqDetails,
   });
 
   if (loading) {
@@ -217,7 +217,10 @@ export default function OpportunitiesTable({ data, loading }: OpportunitiesTable
                 {row.getIsExpanded() && (
                   <tr>
                     <td colSpan={columns.length} className="bg-gray-50 px-6 py-4">
-                      <ItbDetails opportunity={row.original} />
+                      <div className="space-y-6">
+                        {row.original.hasItbDetails && <ItbDetails opportunity={row.original} />}
+                        {row.original.hasRfqDetails && <RfqDetails opportunity={row.original} />}
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -284,193 +287,216 @@ export default function OpportunitiesTable({ data, loading }: OpportunitiesTable
 function ItbDetails({ opportunity }: { opportunity: FormattedOpportunity }) {
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h4 className="text-lg font-semibold text-primary-900 mb-4">ITB Details</h4>
+      <h4 className="text-lg font-semibold text-primary-900 mb-4">Invitation to Bid Details</h4>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {opportunity.solicitation_number && (
+        {opportunity.itb_solicitation_number && (
           <div>
             <dt className="text-sm font-medium text-gray-500">Solicitation Number</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.solicitation_number}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_solicitation_number}</dd>
           </div>
         )}
         
-        {opportunity.procurement_mode && (
-          <div>
+        {opportunity.itb_procurement_mode && (
+          <div className="md:col-span-2">
             <dt className="text-sm font-medium text-gray-500">Procurement Mode</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.procurement_mode}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_procurement_mode}</dd>
           </div>
         )}
         
-        {opportunity.funding_source && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Funding Source</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.funding_source}</dd>
-          </div>
-        )}
-        
-        {opportunity.delivery_period && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Delivery Period</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.delivery_period}</dd>
-          </div>
-        )}
-        
-        {opportunity.contact_person && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Contact Person</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.contact_person}</dd>
-          </div>
-        )}
-        
-        {opportunity.contact_email && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Contact Email</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.contact_email}</dd>
-          </div>
-        )}
-        
-        {opportunity.pre_bid_conference && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Pre-bid Conference</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.pre_bid_conference}</dd>
-          </div>
-        )}
-        
-        {opportunity.bid_documents_fee && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Bid Documents Fee</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.bid_documents_fee}</dd>
-          </div>
-        )}
-        
-        {opportunity.trade_agreement && (
+        {opportunity.itb_trade_agreement && (
           <div>
             <dt className="text-sm font-medium text-gray-500">Trade Agreement</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.trade_agreement}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_trade_agreement}</dd>
           </div>
         )}
         
-        {opportunity.classification && (
+        {opportunity.itb_classification && (
           <div>
             <dt className="text-sm font-medium text-gray-500">Classification</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.classification}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_classification}</dd>
           </div>
         )}
         
-        {opportunity.contact_designation && (
+        {opportunity.itb_category && (
           <div>
-            <dt className="text-sm font-medium text-gray-500">Contact Designation</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.contact_designation}</dd>
+            <dt className="text-sm font-medium text-gray-500">Category</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_category}</dd>
           </div>
         )}
         
-        {opportunity.contact_address && (
+        {opportunity.itb_approved_budget && (
           <div>
+            <dt className="text-sm font-medium text-gray-500">Approved Budget</dt>
+            <dd className="mt-1 text-sm text-gray-900">
+              {new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(opportunity.itb_approved_budget)}
+            </dd>
+          </div>
+        )}
+        
+        {opportunity.itb_delivery_period && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Delivery Period</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_delivery_period}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_area_of_delivery && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Area of Delivery</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_area_of_delivery}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_client_agency && (
+          <div className="md:col-span-2">
+            <dt className="text-sm font-medium text-gray-500">Client Agency</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_client_agency}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_contact_person && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Contact Person</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_contact_person}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_contact_designation && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Designation</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_contact_designation}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_contact_phone && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Contact Phone</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_contact_phone}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_contact_email && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Contact Email</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_contact_email}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_contact_address && (
+          <div className="md:col-span-2">
             <dt className="text-sm font-medium text-gray-500">Contact Address</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.contact_address}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_contact_address}</dd>
           </div>
         )}
         
-        {opportunity.bid_submission_deadline && (
+        {opportunity.itb_closing_date && (
           <div>
             <dt className="text-sm font-medium text-gray-500">Bid Submission Deadline</dt>
-            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.bid_submission_deadline)}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.itb_closing_date)}</dd>
           </div>
         )}
         
-        {opportunity.bid_opening_date && (
+        {opportunity.itb_opening_date && (
           <div>
             <dt className="text-sm font-medium text-gray-500">Bid Opening Date</dt>
-            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.bid_opening_date)}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.itb_opening_date)}</dd>
           </div>
         )}
         
-        {opportunity.date_published && (
+        {opportunity.itb_pre_bid_conference && (
           <div>
-            <dt className="text-sm font-medium text-gray-500">Date Published</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.date_published}</dd>
+            <dt className="text-sm font-medium text-gray-500">Pre-bid Conference</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_pre_bid_conference}</dd>
           </div>
         )}
         
-        {opportunity.client_agency && (
+        {opportunity.itb_bidding_documents && (
           <div>
-            <dt className="text-sm font-medium text-gray-500">Client Agency</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.client_agency}</dd>
+            <dt className="text-sm font-medium text-gray-500">Bid Documents Fee</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_bidding_documents}</dd>
           </div>
         )}
         
-        {opportunity.bac_chairman && (
+        {opportunity.itb_date_posted && (
           <div>
-            <dt className="text-sm font-medium text-gray-500">BAC Chairman</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.bac_chairman}</dd>
+            <dt className="text-sm font-medium text-gray-500">Date Posted</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_date_posted}</dd>
           </div>
         )}
         
-        {opportunity.bac_secretariat && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">BAC Secretariat</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.bac_secretariat}</dd>
-          </div>
-        )}
-        
-        {opportunity.created_by && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Created By</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.created_by}</dd>
-          </div>
-        )}
-        
-        {opportunity.bid_supplements !== undefined && opportunity.bid_supplements > 0 && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Bid Supplements</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.bid_supplements}</dd>
-          </div>
-        )}
-        
-        {opportunity.document_request_list !== undefined && opportunity.document_request_list > 0 && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Document Request List</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.document_request_list}</dd>
-          </div>
-        )}
-        
-        {opportunity.status && (
-          <div>
-            <dt className="text-sm font-medium text-gray-500">Status</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.status}</dd>
-          </div>
-        )}
-        
-        {opportunity.last_updated && (
+        {opportunity.itb_date_last_updated && (
           <div>
             <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
-            <dd className="mt-1 text-sm text-gray-900">{opportunity.last_updated}</dd>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_date_last_updated}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_status && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">ITB Status</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_status}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_created_by && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Created By</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_created_by}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_bac_chairman && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">BAC Chairman</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_bac_chairman}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_bac_secretariat && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">BAC Secretariat</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_bac_secretariat}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_bid_supplements !== undefined && opportunity.itb_bid_supplements > 0 && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Bid Supplements</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_bid_supplements}</dd>
+          </div>
+        )}
+        
+        {opportunity.itb_document_request_list !== undefined && opportunity.itb_document_request_list > 0 && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Document Request List</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.itb_document_request_list}</dd>
           </div>
         )}
       </div>
       
-      {opportunity.description && (
-        <div className="mt-4">
-          <dt className="text-sm font-medium text-gray-500">Description</dt>
-          <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{opportunity.description}</dd>
+      {opportunity.itb_description && (
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <dt className="text-sm font-medium text-gray-500 mb-2">ITB Description</dt>
+          <dd className="text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 p-4 rounded">{opportunity.itb_description}</dd>
         </div>
       )}
       
-      {opportunity.eligibility_requirements && (
+      {opportunity.itb_eligibility && (
         <div className="mt-4">
-          <dt className="text-sm font-medium text-gray-500">Eligibility Requirements</dt>
-          <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{opportunity.eligibility_requirements}</dd>
+          <dt className="text-sm font-medium text-gray-500 mb-2">Eligibility Requirements</dt>
+          <dd className="text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 p-4 rounded">{opportunity.itb_eligibility}</dd>
         </div>
       )}
       
       {(opportunity.source_url || opportunity.detail_url) && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-6 pt-6 border-t border-gray-200">
           <dt className="text-sm font-medium text-gray-500 mb-2">Links</dt>
           {opportunity.detail_url && (
             <dd className="mt-1 text-sm">
               <a href={opportunity.detail_url} target="_blank" rel="noopener noreferrer" 
                 className="text-primary-900 hover:underline">
-                View on PhilGEPS →
+                View Full Details on PhilGEPS →
               </a>
             </dd>
           )}
@@ -478,10 +504,239 @@ function ItbDetails({ opportunity }: { opportunity: FormattedOpportunity }) {
             <dd className="mt-1 text-sm">
               <a href={opportunity.source_url} target="_blank" rel="noopener noreferrer" 
                 className="text-primary-900 hover:underline">
-                Source Page →
+                View Search Results →
               </a>
             </dd>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RfqDetails({ opportunity }: { opportunity: FormattedOpportunity }) {
+  // Parse line items if it's a JSON string
+  let lineItems: any[] = [];
+  if (opportunity.rfq_line_items) {
+    try {
+      lineItems = JSON.parse(opportunity.rfq_line_items);
+    } catch (e) {
+      // If parsing fails, treat as a simple string
+    }
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <h4 className="text-lg font-semibold text-primary-900 mb-4">RFQ Details</h4>
+      
+      {opportunity.itb_has_active_rfq === 'true' && (
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+          <p className="text-sm text-green-800 font-medium">This opportunity has an active RFQ</p>
+        </div>
+      )}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {opportunity.rfq_solicitation_number && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Solicitation Number</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_solicitation_number}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_title && (
+          <div className="md:col-span-2">
+            <dt className="text-sm font-medium text-gray-500">RFQ Title</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_title}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_status && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Status</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_status}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_request_type && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Request Type</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_request_type}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_notice_type && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Notice Type</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_notice_type}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_business_category && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">Business Category</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_business_category}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_approved_budget && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Approved Budget</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_approved_budget}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_funding_source && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Funding Source</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_funding_source}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_area_of_delivery && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Area of Delivery</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_area_of_delivery}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_delivery_date && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Delivery Date</dt>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.rfq_delivery_date)}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_open_date && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Open Date</dt>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.rfq_open_date)}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_close_date && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Close Date</dt>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.rfq_close_date)}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_submission_deadline && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Submission Deadline</dt>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.rfq_submission_deadline)}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_published_date && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Published Date</dt>
+            <dd className="mt-1 text-sm text-gray-900">{formatDate(opportunity.rfq_published_date)}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_contact_person && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Contact Person</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_contact_person}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_contact_number && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Contact Number</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_contact_number}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_client_agency && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Client Agency</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_client_agency}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_pre_bid_conference && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Pre-bid Conference</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_pre_bid_conference}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_pre_procurement_conference && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Pre-procurement Conference</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_pre_procurement_conference}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_trade_agreement && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">RFQ Trade Agreement</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_trade_agreement}</dd>
+          </div>
+        )}
+        
+        {opportunity.rfq_reason && (
+          <div className="md:col-span-3">
+            <dt className="text-sm font-medium text-gray-500">RFQ Reason</dt>
+            <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_reason}</dd>
+          </div>
+        )}
+      </div>
+      
+      {opportunity.rfq_description && (
+        <div className="mt-4">
+          <dt className="text-sm font-medium text-gray-500">RFQ Description</dt>
+          <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{opportunity.rfq_description}</dd>
+        </div>
+      )}
+      
+      {opportunity.rfq_special_instructions && (
+        <div className="mt-4">
+          <dt className="text-sm font-medium text-gray-500">Special Instructions</dt>
+          <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{opportunity.rfq_special_instructions}</dd>
+        </div>
+      )}
+      
+      {opportunity.rfq_required_documents && (
+        <div className="mt-4">
+          <dt className="text-sm font-medium text-gray-500">Required Documents</dt>
+          <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">{opportunity.rfq_required_documents}</dd>
+        </div>
+      )}
+      
+      {lineItems.length > 0 && (
+        <div className="mt-4">
+          <dt className="text-sm font-medium text-gray-500 mb-2">Line Items</dt>
+          <dd className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Unit</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {lineItems.map((item: any, index: number) => (
+                  <tr key={index}>
+                    <td className="px-3 py-2 text-sm text-gray-900">{item.name || item.item || '-'}</td>
+                    <td className="px-3 py-2 text-sm text-gray-900">{item.description || '-'}</td>
+                    <td className="px-3 py-2 text-sm text-gray-900 text-right">{item.quantity || '-'}</td>
+                    <td className="px-3 py-2 text-sm text-gray-900 text-right">{item.unit || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </dd>
+        </div>
+      )}
+      
+      {opportunity.rfq_attachments && (
+        <div className="mt-4">
+          <dt className="text-sm font-medium text-gray-500">Attachments</dt>
+          <dd className="mt-1 text-sm text-gray-900">{opportunity.rfq_attachments}</dd>
         </div>
       )}
     </div>

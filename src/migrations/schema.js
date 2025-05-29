@@ -102,6 +102,38 @@ try {
       -- URLs and metadata
       source_url TEXT,
       detail_url TEXT,
+      
+      -- RFQ specific fields
+      itb_has_active_rfq TEXT,
+      rfq_solicitation_number TEXT,
+      rfq_title TEXT,
+      rfq_status TEXT,
+      rfq_open_date DATETIME,
+      rfq_close_date DATETIME,
+      rfq_description TEXT,
+      rfq_request_type TEXT,
+      rfq_published_date DATETIME,
+      rfq_notice_type TEXT,
+      rfq_business_category TEXT,
+      rfq_approved_budget TEXT,
+      rfq_submission_deadline DATETIME,
+      rfq_special_instructions TEXT,
+      rfq_funding_source TEXT,
+      rfq_reason TEXT,
+      rfq_area_of_delivery TEXT,
+      rfq_delivery_date DATETIME,
+      rfq_contact_person TEXT,
+      rfq_contact_number TEXT,
+      rfq_required_documents TEXT,
+      rfq_attachments TEXT,
+      rfq_line_items TEXT,
+      rfq_trade_agreement TEXT,
+      rfq_pre_procurement_conference TEXT,
+      rfq_pre_bid_conference TEXT,
+      rfq_procuring_entity_org_id TEXT,
+      rfq_client_agency_org_id TEXT,
+      rfq_client_agency TEXT,
+      
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );

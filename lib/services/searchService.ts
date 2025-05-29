@@ -39,6 +39,68 @@ export interface Opportunity {
   bac_secretariat?: string;
   source_url?: string;
   detail_url?: string;
+  
+  // ITB Fields (Invitation to Bid)
+  itb_solicitation_number?: string;
+  itb_trade_agreement?: string;
+  itb_procurement_mode?: string;
+  itb_classification?: string;
+  itb_category?: string;
+  itb_approved_budget?: number;
+  itb_delivery_period?: string;
+  itb_client_agency?: string;
+  itb_contact_person?: string;
+  itb_contact_designation?: string;
+  itb_contact_address?: string;
+  itb_contact_phone?: string;
+  itb_contact_email?: string;
+  itb_area_of_delivery?: string;
+  itb_date_posted?: string;
+  itb_date_last_updated?: string;
+  itb_closing_date?: string;
+  itb_opening_date?: string;
+  itb_pre_bid_conference?: string;
+  itb_description?: string;
+  itb_eligibility?: string;
+  itb_created_by?: string;
+  itb_status?: string;
+  itb_bid_supplements?: number;
+  itb_document_request_list?: number;
+  itb_bidding_documents?: string;
+  itb_bac_chairman?: string;
+  itb_bac_secretariat?: string;
+  
+  // RFQ Fields
+  itb_has_active_rfq?: string;
+  rfq_solicitation_number?: string;
+  rfq_title?: string;
+  rfq_status?: string;
+  rfq_open_date?: string;
+  rfq_close_date?: string;
+  rfq_description?: string;
+  rfq_request_type?: string;
+  rfq_published_date?: string;
+  rfq_notice_type?: string;
+  rfq_business_category?: string;
+  rfq_approved_budget?: string;
+  rfq_submission_deadline?: string;
+  rfq_special_instructions?: string;
+  rfq_funding_source?: string;
+  rfq_reason?: string;
+  rfq_area_of_delivery?: string;
+  rfq_delivery_date?: string;
+  rfq_contact_person?: string;
+  rfq_contact_number?: string;
+  rfq_required_documents?: string;
+  rfq_attachments?: string;
+  rfq_line_items?: string;
+  rfq_trade_agreement?: string;
+  rfq_pre_procurement_conference?: string;
+  rfq_pre_bid_conference?: string;
+  rfq_procuring_entity_org_id?: string;
+  rfq_client_agency_org_id?: string;
+  rfq_client_agency?: string;
+  
   [key: string]: any;
 }
 
@@ -58,6 +120,7 @@ export interface FormattedOpportunity extends Opportunity {
   is_closing_soon: boolean;
   is_expired: boolean;
   hasItbDetails: boolean;
+  hasRfqDetails: boolean;
 }
 
 export class SearchService {
@@ -203,29 +266,53 @@ export class SearchService {
     
     // Check if opportunity has ITB details
     const hasItbDetails = !!(
-      opportunity.procurement_mode ||
-      opportunity.funding_source ||
-      opportunity.delivery_period ||
-      opportunity.contact_person ||
-      opportunity.contact_email ||
-      opportunity.contact_phone ||
-      opportunity.contact_designation ||
-      opportunity.contact_address ||
-      opportunity.client_agency ||
-      opportunity.pre_bid_conference ||
-      opportunity.bid_documents_fee ||
-      opportunity.bid_submission_deadline ||
-      opportunity.bid_opening_date ||
-      opportunity.trade_agreement ||
-      opportunity.classification ||
-      opportunity.date_published ||
-      opportunity.solicitation_number ||
-      opportunity.description ||
-      opportunity.eligibility_requirements ||
-      opportunity.bac_chairman ||
-      opportunity.bac_secretariat ||
-      opportunity.bid_supplements ||
-      opportunity.document_request_list
+      opportunity.itb_solicitation_number ||
+      opportunity.itb_procurement_mode ||
+      opportunity.itb_trade_agreement ||
+      opportunity.itb_classification ||
+      opportunity.itb_category ||
+      opportunity.itb_approved_budget ||
+      opportunity.itb_delivery_period ||
+      opportunity.itb_client_agency ||
+      opportunity.itb_contact_person ||
+      opportunity.itb_contact_email ||
+      opportunity.itb_contact_phone ||
+      opportunity.itb_contact_designation ||
+      opportunity.itb_contact_address ||
+      opportunity.itb_area_of_delivery ||
+      opportunity.itb_pre_bid_conference ||
+      opportunity.itb_bidding_documents ||
+      opportunity.itb_date_posted ||
+      opportunity.itb_date_last_updated ||
+      opportunity.itb_closing_date ||
+      opportunity.itb_opening_date ||
+      opportunity.itb_description ||
+      opportunity.itb_eligibility ||
+      opportunity.itb_created_by ||
+      opportunity.itb_status ||
+      opportunity.itb_bac_chairman ||
+      opportunity.itb_bac_secretariat ||
+      opportunity.itb_bid_supplements ||
+      opportunity.itb_document_request_list
+    );
+    
+    // Check if opportunity has RFQ details
+    const hasRfqDetails = !!(
+      opportunity.itb_has_active_rfq === 'true' ||
+      opportunity.rfq_solicitation_number ||
+      opportunity.rfq_title ||
+      opportunity.rfq_status ||
+      opportunity.rfq_description ||
+      opportunity.rfq_approved_budget ||
+      opportunity.rfq_submission_deadline ||
+      opportunity.rfq_special_instructions ||
+      opportunity.rfq_funding_source ||
+      opportunity.rfq_contact_person ||
+      opportunity.rfq_contact_number ||
+      opportunity.rfq_required_documents ||
+      opportunity.rfq_line_items ||
+      opportunity.rfq_area_of_delivery ||
+      opportunity.rfq_delivery_date
     );
     
     return {
@@ -234,7 +321,8 @@ export class SearchService {
       days_until_closing: daysUntilClosing,
       is_closing_soon: daysUntilClosing <= 7 && daysUntilClosing >= 0,
       is_expired: daysUntilClosing < 0,
-      hasItbDetails: hasItbDetails
+      hasItbDetails: hasItbDetails,
+      hasRfqDetails: hasRfqDetails
     };
   }
 

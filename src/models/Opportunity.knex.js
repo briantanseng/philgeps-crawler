@@ -1,169 +1,137 @@
 import db from './db.js';
 
 class Opportunity {
-  static async insert(opportunity) {
-    // Ensure all required fields have default values
-    const data = {
-      reference_number: opportunity.reference_number,
-      title: opportunity.title,
-      procuring_entity: opportunity.procuring_entity || 'Not specified',
-      category: opportunity.category || null,
-      approved_budget: opportunity.approved_budget || null,
-      currency: opportunity.currency || 'PHP',
-      publish_date: opportunity.publish_date || null,
-      closing_date: opportunity.closing_date || null,
-      status: opportunity.status || 'Open',
-      description: opportunity.description || null,
-      contact_person: opportunity.contact_person || null,
-      contact_details: opportunity.contact_details || null,
-      bid_documents: opportunity.bid_documents || null,
-      source_url: opportunity.source_url || null,
-      detail_url: opportunity.detail_url || null
-    };
+  static async upsert(data) {
+    const existing = await db('opportunities')
+      .where('reference_number', data.reference_number)
+      .first();
     
-    try {
-      // Use upsert (insert or update)
-      const existing = await db('opportunities')
+    let isNew = false;
+    let isUpdated = false;
+    
+    if (existing) {
+      // Update existing record
+      await db('opportunities')
         .where('reference_number', data.reference_number)
-        .first();
-      
-      if (existing) {
-        await db('opportunities')
-          .where('reference_number', data.reference_number)
-          .update({
-            ...data,
-            updated_at: db.fn.now()
-          });
-        return { action: 'updated', id: existing.id };
-      } else {
-        const [id] = await db('opportunities').insert(data).returning('id');
-        return { action: 'inserted', id };
-      }
-    } catch (error) {
-      console.error('Error inserting opportunity:', error);
-      throw error;
+        .update({
+          ...data,
+          updated_at: db.fn.now()
+        });
+      isUpdated = true;
+    } else {
+      // Insert new record
+      await db('opportunities').insert(data);
+      isNew = true;
     }
+    
+    return { isNew, isUpdated };
   }
-
+  
+  static async insert(data) {
+    // For backward compatibility
+    return await this.upsert(data);
+  }
+  
   static async findByReferenceNumber(referenceNumber) {
     return await db('opportunities')
       .where('reference_number', referenceNumber)
       .first();
   }
-
-  static async search(query, filters = {}) {
-    let queryBuilder = db('opportunities');
-
-    if (query) {
-      queryBuilder = queryBuilder.where(function() {
-        this.where('title', 'like', `%${query}%`)
-          .orWhere('description', 'like', `%${query}%`)
-          .orWhere('procuring_entity', 'like', `%${query}%`);
+  
+  static async findAll() {
+    return await db('opportunities')
+      .orderBy('closing_date', 'desc')
+      .select();
+  }
+  
+  static async search(filters = {}) {
+    let query = db('opportunities');
+    
+    if (filters.keyword) {
+      query = query.where(function() {
+        this.where('title', 'like', `%${filters.keyword}%`)
+          .orWhere('procuring_entity', 'like', `%${filters.keyword}%`)
+          .orWhere('reference_number', 'like', `%${filters.keyword}%`);
       });
     }
-
+    
     if (filters.category) {
-      queryBuilder = queryBuilder.where('category', filters.category);
+      query = query.where(function() {
+        this.where('category', filters.category)
+          .orWhere('itb_category', filters.category);
+      });
     }
-
-    if (filters.minBudget) {
-      queryBuilder = queryBuilder.where('approved_budget', '>=', filters.minBudget);
+    
+    if (filters.area) {
+      query = query.where(function() {
+        this.where('area_of_delivery', filters.area)
+          .orWhere('itb_area_of_delivery', filters.area);
+      });
     }
-
-    if (filters.maxBudget) {
-      queryBuilder = queryBuilder.where('approved_budget', '<=', filters.maxBudget);
+    
+    if (filters.budgetMin) {
+      query = query.where('approved_budget', '>=', filters.budgetMin);
     }
-
+    
+    if (filters.budgetMax) {
+      query = query.where('approved_budget', '<=', filters.budgetMax);
+    }
+    
     if (filters.status) {
-      queryBuilder = queryBuilder.where('status', filters.status);
+      if (filters.status === 'active') {
+        query = query.where('closing_date', '>=', db.fn.now());
+      } else if (filters.status === 'closed') {
+        query = query.where('closing_date', '<', db.fn.now());
+      }
     }
-
-    if (filters.activeOnly) {
-      queryBuilder = queryBuilder.where('closing_date', '>', db.fn.now());
-    }
-
-    queryBuilder = queryBuilder.orderBy('closing_date', 'asc');
-
+    
+    query = query.orderBy('closing_date', 'desc');
+    
     if (filters.limit) {
-      queryBuilder = queryBuilder.limit(filters.limit);
+      query = query.limit(filters.limit);
     }
-
+    
     if (filters.offset) {
-      queryBuilder = queryBuilder.offset(filters.offset);
+      query = query.offset(filters.offset);
     }
-
-    return await queryBuilder;
-  }
-
-  static async count(query = '', filters = {}) {
-    let queryBuilder = db('opportunities');
-
-    if (query) {
-      queryBuilder = queryBuilder.where(function() {
-        this.where('title', 'like', `%${query}%`)
-          .orWhere('description', 'like', `%${query}%`)
-          .orWhere('procuring_entity', 'like', `%${query}%`);
-      });
-    }
-
-    if (filters.category) {
-      queryBuilder = queryBuilder.where('category', filters.category);
-    }
-
-    if (filters.minBudget) {
-      queryBuilder = queryBuilder.where('approved_budget', '>=', filters.minBudget);
-    }
-
-    if (filters.maxBudget) {
-      queryBuilder = queryBuilder.where('approved_budget', '<=', filters.maxBudget);
-    }
-
-    if (filters.activeOnly) {
-      queryBuilder = queryBuilder.where('closing_date', '>', db.fn.now());
-    }
-
-    const result = await queryBuilder.count('* as count').first();
-    return result.count;
-  }
-
-  static async getAll(limit = 100, offset = 0) {
-    return await db('opportunities')
-      .orderBy('closing_date', 'asc')
-      .limit(limit)
-      .offset(offset);
-  }
-
-  static async getActive() {
-    return await db('opportunities')
-      .where('closing_date', '>', db.fn.now())
-      .orderBy('closing_date', 'asc');
-  }
-
-  static async getCategories() {
-    const results = await db('opportunities')
-      .distinct('category')
-      .whereNotNull('category')
-      .orderBy('category');
     
-    return results.map(row => row.category);
+    return await query.select();
   }
-
+  
   static async getStatistics() {
-    const result = await db('opportunities')
-      .select(
-        db.raw('COUNT(*) as total'),
-        db.raw('COUNT(CASE WHEN closing_date > ? THEN 1 END) as active', [new Date()]),
-        db.raw('COUNT(DISTINCT category) as categories'),
-        db.raw('COUNT(DISTINCT procuring_entity) as entities')
-      )
-      .first();
-    
-    return {
-      total: parseInt(result.total) || 0,
-      active: parseInt(result.active) || 0,
-      categories: parseInt(result.categories) || 0,
-      entities: parseInt(result.entities) || 0
+    const stats = {
+      totalOpportunities: 0,
+      activeOpportunities: 0,
+      totalCategories: 0,
+      totalProcuringEntities: 0
     };
+    
+    // Total opportunities
+    const total = await db('opportunities').count('* as count').first();
+    stats.totalOpportunities = total.count;
+    
+    // Active opportunities
+    const active = await db('opportunities')
+      .where('closing_date', '>=', db.fn.now())
+      .count('* as count')
+      .first();
+    stats.activeOpportunities = active.count;
+    
+    // Total categories
+    const categories = await db('opportunities')
+      .select(db.raw('COUNT(DISTINCT COALESCE(category, itb_category)) as count'))
+      .whereNotNull('category')
+      .orWhereNotNull('itb_category')
+      .first();
+    stats.totalCategories = categories.count;
+    
+    // Total procuring entities
+    const entities = await db('opportunities')
+      .countDistinct('procuring_entity as count')
+      .first();
+    stats.totalProcuringEntities = entities.count;
+    
+    return stats;
   }
 }
 

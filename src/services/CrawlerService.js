@@ -31,17 +31,15 @@ class CrawlerService {
       // Process opportunities
       for (const opportunity of opportunities) {
         try {
-          // Check if opportunity exists
-          const existing = await Opportunity.findByReferenceNumber(opportunity.reference_number);
+          // Save opportunity using upsert
+          const result = await Opportunity.upsert(opportunity);
           
-          if (existing) {
-            crawlStats.updated_opportunities++;
-          } else {
+          if (result.isNew) {
             crawlStats.new_opportunities++;
+          } else if (result.isUpdated) {
+            crawlStats.updated_opportunities++;
           }
           
-          // Save opportunity
-          await Opportunity.insert(opportunity);
           crawlStats.opportunities_found++;
           
         } catch (error) {

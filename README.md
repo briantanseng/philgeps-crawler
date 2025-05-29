@@ -1,295 +1,377 @@
 # PhilGEPS Crawler
 
-A web crawler and search application for Philippine Government Electronic Procurement System (PhilGEPS) opportunities.
+A modern Next.js application for searching and crawling Philippine Government Electronic Procurement System (PhilGEPS) opportunities with advanced features and real-time data management.
 
-## 🚀 Quick Start with Docker
+## 🚀 Key Features
 
+### Search & Discovery
+- 🔍 **Advanced Search** - Full-text search with keyword matching across titles and entities
+- 🏷️ **Smart Filtering** - Filter by category, area of delivery, budget range, and status
+- 📊 **Real-time Results** - Instant search results with pagination and sorting
+- 📥 **CSV Export** - Export search results with all filters applied
+
+### Data Visualization
+- 📈 **Live Statistics Dashboard** - Real-time metrics showing:
+  - Total opportunities in database
+  - Active opportunities count
+  - Number of categories
+  - Procuring entities count
+- 🎯 **Status Indicators** - Visual badges for opportunity status (Active, Closing Soon, Expired)
+- ⏱️ **Days Until Closing** - Countdown display for each opportunity
+
+### ITB Details & Expansion
+- 📄 **Expandable Rows** - Click to expand rows with ITB details using TanStack Table
+- 📋 **Comprehensive ITB Information** including:
+  - Solicitation details and procurement mode
+  - Funding source and delivery period
+  - Contact information (person, email, phone, address)
+  - Pre-bid conference details
+  - Bid submission and opening dates
+  - Trade agreements and classifications
+  - BAC (Bids and Awards Committee) information
+  - Eligibility requirements and descriptions
+  - Direct links to PhilGEPS pages
+
+### Crawler Management
+- 🤖 **Automated Background Crawler** - Scheduled crawling with configurable intervals
+- 🎛️ **Web-based Crawler Control Panel**:
+  - Enable/disable crawler with toggle switch
+  - Manual crawl triggering with "Run Now" button
+  - Real-time crawler status (Active/Inactive/Running)
+  - Auto-refreshing status every 10 seconds
+- 📊 **Crawl History & Metrics**:
+  - Last crawl timestamp and duration
+  - Opportunities found, new, and updated counts
+  - Error tracking and status reporting
+
+### Technical Features
+- ⚡ **Next.js 14 App Router** - Modern React framework with server components
+- 🗄️ **SQLite Database** - Efficient local storage with automatic schema migration
+- 🎨 **Tailwind CSS** - Responsive, mobile-first design
+- 📱 **Fully Responsive** - Optimized for desktop, tablet, and mobile devices
+- 🧪 **Comprehensive Testing** - E2E tests with Playwright across multiple browsers
+- 🔄 **Real-time Updates** - Automatic UI updates without page refresh
+
+## 📋 Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Chrome/Chromium (for Puppeteer-based crawling)
+
+## 🛠️ Installation
+
+1. **Clone the repository**
 ```bash
-# Using Docker Compose (recommended)
-docker-compose up -d
-
-# Access the application
-open http://localhost:8080
-```
-
-## ☁️ Deploy to Google Cloud Run
-
-```bash
-gcloud run deploy philgeps-crawler \
-  --source . \
-  --platform managed \
-  --region asia-southeast1 \
-  --allow-unauthenticated
-```
-
-## Features
-
-- **Automated Web Crawling**: Regularly crawls PhilGEPS website to fetch latest procurement opportunities
-- **Keyword Search**: Search opportunities by keywords across titles, descriptions, and procuring entities
-- **Advanced Filtering**: Filter by category, budget range, and status (active/expired)
-- **Dual Database Support**: Choose between SQLite (simple) or PostgreSQL (scalable)
-- **REST API**: Access data programmatically via API endpoints
-- **Web UI**: Simple web interface for searching and browsing opportunities
-- **CSV Export**: Export search results to CSV format
-- **Scheduled Crawling**: Automatic crawling at configurable intervals
-- **Crawler Control**: Web-based toggle to enable/disable crawler with manual run option
-- **Docker Ready**: Easy deployment with Docker and Docker Compose
-- **Cloud Ready**: Optimized for Google Cloud Run deployment
-
-## Installation
-
-### Option 1: Docker (Recommended)
-
-```bash
-# Clone the repository
 git clone <repository-url>
 cd philgeps-crawler
-
-# Using SQLite (default)
-docker-compose up -d
-
-# OR using PostgreSQL
-docker-compose -f docker-compose.postgres.yml up -d
 ```
 
-### Option 2: Local Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd philgeps-crawler
-```
-
-2. Install dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Create environment file:
+3. **Set up environment variables**
 ```bash
 cp .env.example .env
 ```
 
-4. Configure settings in `.env` (optional)
-
-## Usage
-
-### Start the Application (with scheduled crawling)
-
+4. **Initialize the database**
 ```bash
-npm start
+npm run migrate
 ```
 
-This will:
-- Start the web server on http://localhost:3000
-- Schedule automatic crawling based on CRAWL_INTERVAL_MINUTES
-- Ask if you want to run an initial crawl
-
-### Manual Crawl
-
-Basic crawl (first page only):
-```bash
-npm run crawl
-```
-
-Full crawl with pagination (requires Puppeteer):
-```bash
-# Crawl 10 pages (default)
-npm run crawl:all
-
-# Crawl first N pages
-npm run crawl:all 50
-
-# Crawl specific page range
-npm run crawl:all 10 20    # Crawl pages 10 to 20
-npm run crawl:all 100 150  # Crawl pages 100 to 150
-```
-
-### Command Line Search
-
-```bash
-npm run search
-```
-
-This opens an interactive CLI for searching opportunities.
-
-### Web Interface
-
-Open http://localhost:3000 in your browser to access the web UI.
-
-Features:
-- Search and filter opportunities
-- View statistics dashboard
-- Control crawler (enable/disable automatic crawling)
-- Manually trigger crawler runs
-- Monitor crawler status and schedule
-
-## API Endpoints
-
-### Search Opportunities
-```
-GET /api/opportunities/search?q=keyword&category=IT&minBudget=100000&maxBudget=1000000&activeOnly=true
-```
-
-### Get Active Opportunities
-```
-GET /api/opportunities/active
-```
-
-### Get Opportunities by Category
-```
-GET /api/opportunities/category/:category
-```
-
-### Get All Categories
-```
-GET /api/categories
-```
-
-### Get Statistics
-```
-GET /api/statistics
-```
-
-### Export to CSV
-```
-GET /api/opportunities/export?q=keyword&category=IT&activeOnly=true
-```
-
-### Trigger Manual Crawl
-```
-POST /api/crawl/trigger
-```
-
-### Get Crawl History
-```
-GET /api/crawl/history
-```
-
-### Crawler Control
-```
-GET /api/crawler/status     # Get crawler status and schedule
-POST /api/crawler/toggle    # Enable/disable crawler
-POST /api/crawler/run       # Manually trigger crawler
-```
-
-## Project Structure
-
-```
-philgeps-crawler/
-├── src/
-│   ├── scrapers/         # Web scraping logic
-│   ├── models/           # Database models
-│   ├── services/         # Business logic
-│   ├── api/              # REST API routes
-│   ├── index.js          # Main application entry
-│   ├── crawl.js          # Manual crawl script
-│   └── search.js         # CLI search tool
-├── public/               # Web UI files
-├── data/                 # SQLite database location
-├── tests/                # Test files
-├── docs/                 # Documentation
-│   ├── API.md           # API endpoint reference
-│   ├── ARCHITECTURE.md  # System architecture
-│   ├── DATABASE.md      # Database schema
-│   ├── DEPLOYMENT.md    # Cloud deployment guide
-│   ├── DOCKER-QUICKSTART.md # Docker quick start
-│   └── CRAWLER_TOGGLE_FEATURE.md # Crawler control documentation
-├── Dockerfile           # Docker container definition
-├── docker-compose.yml   # Docker Compose configuration
-└── cloudbuild.yaml      # Google Cloud Build config
-```
-
-## Database Options
-
-### SQLite (Default)
-- Simple file-based database
-- No setup required
-- Perfect for development and small deployments
-- **Cloud Run**: Supports persistent storage via GCS volume mount
-
-### PostgreSQL
-- Full-featured relational database
-- Better for production and multi-instance deployments
-- Use `docker-compose -f docker-compose.postgres.yml up` for easy setup
-
-See [Database Documentation](docs/DATABASE.md) for detailed schema and setup instructions.
-
-## Cloud Run Deployment with Persistent Storage
-
-When deploying to Google Cloud Run with SQLite, use GCS volume mount for persistence:
-
-```bash
-# Set up GCS volume mount
-cd scripts && ./setup-gcs-volume.sh
-
-# Deploy with persistent SQLite
-gcloud builds submit --substitutions=_DATABASE_TYPE=sqlite3
-```
-
-See [GCS Volume Mount Guide](docs/GCS-VOLUME-MOUNT.md) for details.
-
-## Development
-
-### Running in Development Mode
-
+5. **Start the development server**
 ```bash
 npm run dev
 ```
 
-This uses Node.js --watch flag for auto-restart on file changes.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-### Testing
+## 📁 Project Structure
 
-```bash
-npm test
+```
+philgeps-crawler/
+├── app/                        # Next.js 14 App Directory
+│   ├── api/                   # API Routes
+│   │   ├── areas/            # Area reference data
+│   │   ├── categories/       # Category reference data
+│   │   ├── crawler/          # Crawler control endpoints
+│   │   ├── opportunities/    # Search and export
+│   │   └── statistics/       # Dashboard metrics
+│   ├── layout.tsx            # Root layout with metadata
+│   └── page.tsx              # Home page with search UI
+├── components/                # React Components
+│   ├── CrawlerControl.tsx    # Crawler management panel
+│   ├── OpportunitiesTable.tsx # TanStack Table with ITB expansion
+│   ├── SearchForm.tsx        # Advanced search form
+│   └── Statistics.tsx        # Metrics dashboard
+├── lib/                      # Core Libraries
+│   ├── db.ts                # Database connection
+│   ├── crawler/             # Crawler service
+│   ├── services/            # Business logic
+│   │   └── searchService.ts # Search and formatting
+│   └── utils/               # Utilities
+│       └── dateFormat.ts    # Date/number formatting
+├── src/                     # Legacy Crawler Code
+│   ├── scrapers/           # Web scraping logic
+│   │   ├── PhilGEPSScraper.js    # Main scraper
+│   │   ├── ITBDetailScraper.js   # ITB details
+│   │   └── PuppeteerScraper.js   # Browser automation
+│   ├── services/           # Crawler services
+│   └── migrations/         # Database schema
+├── tests/                  # Test Suites
+│   └── e2e/               # Playwright E2E tests
+├── public/                # Static assets
+└── data/                  # SQLite database (auto-created)
 ```
 
-## Notes
+## 🔧 Configuration
 
-- The crawler respects rate limiting with configurable delays between requests
-- Initial crawl may take several minutes depending on the number of opportunities
-- The web UI updates in real-time as new data is crawled
-- All dates/times are stored in ISO format in the database
-- The basic crawler (`npm run crawl`) only extracts from the first page due to ASP.NET postback limitations
-- Use `npm run crawl:all` for full pagination support (requires Puppeteer installation)
-- PhilGEPS has over 24,000 active opportunities across 1,200+ pages
+### Environment Variables
 
-## Troubleshooting
+Create a `.env` file with the following:
 
-### Common Issues
+```env
+# Database
+DATABASE_PATH=./data/philgeps.db
 
-1. **Socket hang up / Connection errors**
-   - Increase `REQUEST_DELAY_MS` to 5000 or 10000
-   - Set `MAX_CONCURRENT_REQUESTS=1`
-   - Use smaller page ranges (5-10 pages)
+# Crawler Configuration
+CRAWL_INTERVAL_MINUTES=60         # How often to run crawler
+MAX_PAGES_TO_CRAWL=10            # Pages per crawl run
+REQUEST_DELAY_MS=2000            # Delay between requests
+CRAWLER_TIMEOUT_SECONDS=300      # Overall timeout
+FETCH_ITB_DETAILS=true           # Fetch detailed ITB info
+START_FROM_PAGE=1                # Starting page number
+PAGES_TO_CRAWL=5                 # Number of pages to crawl
 
-2. **Timeout errors**
-   - Increase `CRAWLER_TIMEOUT_SECONDS`
-   - Check internet connection stability
+# Development
+NODE_ENV=development
+```
 
-3. **Database locked errors**
-   - Ensure only one instance is running
-   - Consider switching to PostgreSQL
+### Available Scripts
 
-4. **No opportunities found**
-   - Check if PhilGEPS website is accessible
-   - Try the basic crawler first: `npm run crawl`
+```bash
+# Development
+npm run dev                 # Start Next.js dev server
+npm run build              # Build for production
+npm start                  # Start production server
 
-See [Troubleshooting Guide](docs/TROUBLESHOOTING.md) for detailed solutions.
+# Testing
+npm run test               # Run all tests
+npm run test:e2e           # Run E2E tests only
+npm run test:unit          # Run unit tests only
+npm run test:coverage      # Generate coverage report
 
-## Documentation
+# Crawler Operations
+npm run background:crawler  # Start background crawler service
+npm run crawl              # Run one-time crawl
+npm run crawl:all          # Crawl all pages with Puppeteer
+npm run migrate            # Run database migrations
 
-- 📖 [API Reference](docs/API.md) - REST API endpoints
-- 🏗️ [Architecture](docs/ARCHITECTURE.md) - System design and components
-- 💾 [Database Schema](docs/DATABASE.md) - SQLite table structure
-- 🚀 [Deployment Guide](docs/DEPLOYMENT.md) - Deploy to Google Cloud Run
-- 🐳 [Docker Quick Start](docs/DOCKER-QUICKSTART.md) - Docker setup guide
-- 🔧 [Configuration](docs/CONFIGURATION.md) - Environment variables
-- 🕷️ [Crawling Guide](docs/CRAWLING-GUIDE.md) - Page range crawling strategies
-- 🎛️ [Crawler Control](docs/CRAWLER_TOGGLE_FEATURE.md) - Web-based crawler management
-- 🚨 [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
+# Code Quality
+npm run lint               # Run ESLint
+npm run type-check         # Run TypeScript checks
+```
 
-## License
+## 🌐 API Reference
 
-MIT
+### Opportunities Endpoints
+
+#### Search Opportunities
+```http
+GET /api/opportunities/search
+```
+Query parameters:
+- `q` - Search keywords
+- `category` - Filter by category
+- `areaOfDelivery` - Filter by area
+- `minBudget` - Minimum budget
+- `maxBudget` - Maximum budget
+- `activeOnly` - Show only active opportunities
+- `limit` - Results per page (default: 50)
+- `offset` - Pagination offset
+
+#### Export to CSV
+```http
+GET /api/opportunities/export
+```
+Same query parameters as search. Returns CSV file download.
+
+### Reference Data Endpoints
+
+#### Get Statistics
+```http
+GET /api/statistics
+```
+Returns:
+```json
+{
+  "success": true,
+  "data": {
+    "total": 1000,
+    "active": 250,
+    "categories": 15,
+    "entities": 200
+  }
+}
+```
+
+#### Get Categories
+```http
+GET /api/categories
+```
+
+#### Get Areas
+```http
+GET /api/areas
+```
+
+### Crawler Control Endpoints
+
+#### Get Crawler Status
+```http
+GET /api/crawler/status
+```
+Returns current status, last crawl info, and configuration.
+
+#### Toggle Crawler
+```http
+POST /api/crawler/toggle
+Body: { "enabled": true/false }
+```
+
+#### Run Manual Crawl
+```http
+POST /api/crawler/run
+```
+
+## 🧪 Testing
+
+The project includes comprehensive E2E tests using Playwright:
+
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run with UI mode
+npm run test:e2e -- --ui
+
+# Run specific test file
+npm run test:e2e search.spec.ts
+
+# Generate HTML report
+npm run test:e2e -- --reporter=html
+```
+
+Test coverage includes:
+- Homepage functionality
+- Search and filtering
+- Crawler controls
+- ITB detail expansion
+- Export functionality
+- Cross-browser compatibility (Chrome, Firefox, Safari, Mobile)
+
+## 🚀 Deployment
+
+### Docker Deployment
+
+```bash
+# Build image
+docker build -t philgeps-crawler .
+
+# Run container
+docker run -p 3000:3000 -v $(pwd)/data:/app/data philgeps-crawler
+```
+
+### Google Cloud Run
+
+```bash
+# Build and deploy
+gcloud builds submit --config cloudbuild.yaml
+```
+
+### Traditional Server
+
+1. Build the application:
+```bash
+npm run build
+```
+
+2. Start the production server:
+```bash
+npm start
+```
+
+3. Run crawler as a separate process:
+```bash
+# Using PM2
+pm2 start npm --name "philgeps-crawler" -- run background:crawler
+
+# Using systemd (create service file)
+# See docs/DEPLOYMENT.md for details
+```
+
+### Vercel Deployment
+
+1. Push to GitHub
+2. Import project in Vercel
+3. Configure environment variables
+4. Deploy (Note: crawler needs separate hosting)
+
+## 📊 Database Schema
+
+The application uses SQLite with the following main tables:
+
+### opportunities
+- Core procurement data with 40+ fields
+- ITB details integrated into main table
+- Comprehensive indexing for performance
+
+### crawl_history
+- Tracks all crawler runs
+- Stores metrics and error information
+
+See `DATABASE_SCHEMA.md` for complete schema documentation.
+
+## 🔍 Performance Features
+
+- **Efficient Pagination** - Server-side pagination with TanStack Table
+- **Smart Caching** - Browser caching for static assets
+- **Optimized Queries** - Database indexes on all searchable fields
+- **Lazy Loading** - ITB details loaded only when expanded
+- **Debounced Search** - Prevents excessive API calls
+
+## 🛡️ Security Features
+
+- **Input Sanitization** - All user inputs are sanitized
+- **SQL Injection Prevention** - Parameterized queries
+- **XSS Protection** - React's built-in XSS prevention
+- **CORS Configuration** - Proper CORS headers
+- **Rate Limiting** - API rate limiting (configurable)
+
+## 📱 Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+- Mobile browsers (iOS Safari, Chrome Android)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 🙏 Acknowledgments
+
+- PhilGEPS for providing public procurement data
+- Next.js team for the amazing framework
+- TanStack for the powerful table library
+- All contributors and testers

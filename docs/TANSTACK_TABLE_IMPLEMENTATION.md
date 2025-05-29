@@ -1,157 +1,241 @@
-# TanStack Table Implementation with Expandable Rows
+# TanStack Table Implementation Guide
 
 ## Overview
+The PhilGEPS Crawler uses TanStack Table v8 to display procurement opportunities with advanced features including sorting, pagination, and expandable rows for ITB details.
 
-The PhilGEPS Crawler search interface uses TanStack Table v8 to display search results with expandable rows for ITB (Invitation to Bid) details. This provides a clean, performant table with sorting, pagination, and detail expansion capabilities.
+## Key Features Implemented
 
-## Features
+### 1. Expandable Rows
+- **Visual Indicator**: Arrow icons (▶/▼) indicate expandable/expanded state
+- **Conditional Display**: Only rows with `hasItbDetails` property show expand button
+- **State Management**: Expansion state maintained during pagination
+- **Smooth Transitions**: CSS animations for expand/collapse
 
-### 1. Table Functionality
-- **Sorting**: Click column headers to sort ascending/descending
-- **Pagination**: Navigate through results with customizable page sizes (10, 20, 50, 100)
-- **Expandable Rows**: Click expand button to view ITB details inline
-- **Responsive Design**: Table adapts to different screen sizes
+### 2. Sorting
+- **Column Sorting**: Click column headers to sort
+- **Visual Indicators**: ▲ (ascending), ▼ (descending), ↕ (unsorted)
+- **Default Sort**: Opportunities sorted by closing date (ascending)
+- **Multi-column Support**: Can sort by any column
 
-### 2. ITB Details Display
-When expanded, rows show additional information including:
-- Solicitation Number
-- Procurement Mode
-- Trade Agreement
-- Classification
-- Funding Source
-- Delivery Period
-- Contact Information (Person, Designation, Phone, Email)
-- Pre-bid Conference Details
-- Bid Documents Fee
-- Important Dates (Published, Submission Deadline, Opening Date)
-- Full Description
+### 3. Pagination
+- **Server-side**: Efficient handling of large datasets
+- **Page Size Options**: 10, 20, 30, 40, 50 items per page
+- **Navigation Controls**: First, Previous, Next, Last buttons
+- **Page Info**: Shows current page and total pages
 
-### 3. Visual Indicators
-- **Expand Button**: Shows ▶ when collapsed, ▼ when expanded
-- **Status Badges**: Active (green), Closing Soon (yellow), Expired (red)
-- **Days Until Closing**: Color-coded based on urgency
-- **Reference Links**: Clickable reference numbers open detail pages
+### 4. Data Formatting
+- **Budget**: Formatted as PHP currency
+- **Dates**: Consistent date/time formatting
+- **Status Badges**: Color-coded status indicators
+- **Days Until Closing**: Calculated countdown
 
 ## Implementation Details
 
-### Table Configuration
+### Component Structure
+```typescript
+// components/OpportunitiesTable.tsx
+export default function OpportunitiesTable({ 
+  data, 
+  loading 
+}: OpportunitiesTableProps) {
+  // State management
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'closing_date', desc: false }
+  ]);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
-```javascript
-const table = createTable({
-    data: currentData,
+  // Column definitions
+  const columns = useMemo<ColumnDef<FormattedOpportunity>[]>(
+    () => [...],
+    []
+  );
+
+  // Table instance
+  const table = useReactTable({
+    data,
     columns,
+    state: { sorting, expanded },
+    onSortingChange: setSorting,
+    onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getRowCanExpand: (row) => row.original.hasItbDetails,
-    state: {
-        expanded: expandedState,
-    },
-    onExpandedChange: (updater) => {
-        expandedState = typeof updater === 'function' 
-            ? updater(expandedState)
-            : updater;
-        table.options.state.expanded = expandedState;
-        renderTable();
-    },
-});
-```
-
-### Determining ITB Details Availability
-
-The `hasItbDetails` flag is computed in the `SearchService.formatOpportunity()` method:
-
-```javascript
-const hasItbDetails = !!(
-    opportunity.procurement_mode ||
-    opportunity.funding_source ||
-    opportunity.delivery_period ||
-    opportunity.contact_person ||
-    opportunity.contact_email ||
-    opportunity.contact_phone ||
-    opportunity.pre_bid_conference ||
-    opportunity.bid_documents_fee ||
-    opportunity.bid_submission_deadline ||
-    opportunity.bid_opening_date ||
-    opportunity.description
-);
+  });
+}
 ```
 
 ### Column Definitions
 
-The table includes the following columns:
-1. **Expander**: Shows expand/collapse button for rows with ITB details
-2. **Reference Number**: Linked to detail page
-3. **Title**: Truncated with ellipsis for long titles
-4. **Procuring Entity**: Organization requesting the bid
-5. **Category**: Type of procurement
-6. **Area**: Area of delivery
-7. **Budget**: Formatted currency amount
-8. **Closing Date**: Date with status badge
-9. **Days Left**: Countdown to closing
+#### Expander Column
+```typescript
+{
+  id: 'expander',
+  header: () => null,
+  cell: ({ row }) => {
+    if (!row.original.hasItbDetails) return null;
+    return (
+      <button
+        onClick={row.getToggleExpandedHandler()}
+        className="px-2 py-1 text-primary-900 hover:bg-primary-50 rounded"
+      >
+        {row.getIsExpanded() ? '▼' : '▶'}
+      </button>
+    );
+  },
+  size: 40,
+}
+```
 
-### Styling
+#### Data Columns
+```typescript
+{
+  accessorKey: 'reference_number',
+  header: 'Reference #',
+  cell: ({ getValue, row }) => {
+    const value = getValue() as string;
+    const url = row.original.detail_url;
+    if (url) {
+      return (
+        <a href={url} target="_blank" rel="noopener noreferrer" 
+          className="text-primary-900 hover:underline font-medium">
+          {value}
+        </a>
+      );
+    }
+    return value;
+  },
+}
+```
 
-The expanded row content uses:
-- **Background**: Light gray (#f8fafc) for the expanded row
-- **Border**: 2px solid bottom border for visual separation
-- **Content Background**: White with subtle shadow
-- **Grid Layout**: Responsive grid for ITB fields
-- **Typography**: Uppercase labels with proper spacing
+### Expanded Row Content
+```typescript
+{row.getIsExpanded() && (
+  <tr>
+    <td colSpan={columns.length} className="bg-gray-50 px-6 py-4">
+      <ItbDetails opportunity={row.original} />
+    </td>
+  </tr>
+)}
+```
 
-## Usage
+### ITB Details Component
+The `ItbDetails` component displays comprehensive information in a grid layout:
 
-### Basic Search Flow
-1. User enters search criteria
-2. Results load into TanStack Table
-3. User can sort columns by clicking headers
-4. User clicks expand button (▶) to view ITB details
-5. Expanded content shows inline below the row
-6. User can collapse by clicking again (▼)
+```typescript
+function ItbDetails({ opportunity }: { opportunity: FormattedOpportunity }) {
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <h4 className="text-lg font-semibold text-primary-900 mb-4">
+        ITB Details
+      </h4>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Conditional rendering of all ITB fields */}
+        {opportunity.solicitation_number && (
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Solicitation Number
+            </dt>
+            <dd className="mt-1 text-sm text-gray-900">
+              {opportunity.solicitation_number}
+            </dd>
+          </div>
+        )}
+        {/* ... more fields ... */}
+      </div>
+    </div>
+  );
+}
+```
 
-### Pagination Controls
-- **Page Size**: Dropdown to select rows per page
-- **Navigation**: First, Previous, Next, Last buttons
-- **Page Numbers**: Direct page selection
-- **Info Display**: Shows current range and total count
+## Data Flow
 
-## Technical Notes
+### 1. Data Preparation
+```typescript
+// In searchService.ts
+formatOpportunity(opportunity: Opportunity): FormattedOpportunity {
+  // Calculate hasItbDetails flag
+  const hasItbDetails = !!(
+    opportunity.procurement_mode ||
+    opportunity.funding_source ||
+    opportunity.contact_person ||
+    // ... check for 20+ ITB fields
+  );
+  
+  return {
+    ...opportunity,
+    hasItbDetails,
+    formatted_budget: this.formatCurrency(opportunity.approved_budget),
+    days_until_closing: calculateDaysUntilClosing(opportunity.closing_date),
+    // ... other formatted fields
+  };
+}
+```
 
-### Performance Considerations
-- Table uses virtual row model for efficient rendering
-- Expansion state managed separately from table data
-- Only expanded rows render detail content
-- Pagination reduces DOM elements
+### 2. Table Rendering
+```typescript
+<tbody className="bg-white divide-y divide-gray-200">
+  {table.getRowModel().rows.map(row => (
+    <React.Fragment key={row.id}>
+      <tr className="hover:bg-gray-50">
+        {row.getVisibleCells().map(cell => (
+          <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </td>
+        ))}
+      </tr>
+      {row.getIsExpanded() && (
+        <tr>
+          <td colSpan={columns.length} className="bg-gray-50 px-6 py-4">
+            <ItbDetails opportunity={row.original} />
+          </td>
+        </tr>
+      )}
+    </React.Fragment>
+  ))}
+</tbody>
+```
 
-### Browser Compatibility
-- Modern browsers with ES6 module support
-- CSS Grid for responsive layouts
-- Flexbox for component alignment
-- CSS transitions for smooth interactions
+## Styling and UX
 
-### Dependencies
-- TanStack Table Core v8.11.2 (loaded via CDN)
-- No additional UI framework required
-- Pure JavaScript implementation
+### Responsive Design
+- Table scrolls horizontally on mobile
+- ITB details grid adjusts columns based on screen size
+- Touch-friendly expand buttons
 
-## Customization
+### Visual Feedback
+- Hover states on rows and buttons
+- Loading skeleton during data fetch
+- Empty state message when no results
 
-### Adding New ITB Fields
-1. Add field check to `hasItbDetails` computation in SearchService
-2. Add field display in `renderItbDetails()` function
-3. Follow existing pattern for conditional rendering
+### Performance
+- Memoized column definitions
+- Virtual scrolling ready (can be enabled)
+- Lazy loading of ITB details
 
-### Styling Modifications
-- Expand button: `.expand-btn` class
-- ITB details container: `.itb-details` class
-- Expanded row: `.expanded-row` class
-- Field grid: `.itb-grid` class
+## Usage Example
+
+```typescript
+// In page.tsx
+const [searchResults, setSearchResults] = useState<FormattedOpportunity[]>([]);
+const [loading, setLoading] = useState(false);
+
+return (
+  <OpportunitiesTable 
+    data={searchResults} 
+    loading={loading} 
+  />
+);
+```
 
 ## Future Enhancements
 
-1. **Bulk Operations**: Select multiple rows for export
-2. **Column Visibility**: Toggle which columns to display
-3. **Advanced Filtering**: Filter by ITB detail fields
-4. **Keyboard Navigation**: Arrow keys for row selection
-5. **Print View**: Optimized layout for printing
+1. **Column Visibility**: Allow users to show/hide columns
+2. **Global Filtering**: Add table-wide search
+3. **Row Selection**: Implement multi-select for bulk actions
+4. **Export Selected**: Export only selected rows
+5. **Column Resizing**: Draggable column borders
+6. **Sticky Headers**: Keep headers visible during scroll
+7. **Virtual Scrolling**: Enable for very large datasets

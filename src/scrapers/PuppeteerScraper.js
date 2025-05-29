@@ -228,7 +228,7 @@ class PuppeteerScraper {
               // Merge ITB details with the opportunity
               Object.assign(opportunity, itbDetails);
               
-              console.log(`  - Area of Delivery: ${itbDetails.area_of_delivery || 'Not specified'}`);
+              console.log(`  - Area of Delivery: ${itbDetails.itb_area_of_delivery || 'Not specified'}`);
               
               // Add delay between requests to avoid overloading the server
               if (i < opportunities.length - 1) {

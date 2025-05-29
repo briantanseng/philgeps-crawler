@@ -121,4 +121,5 @@ class ReferenceDataService {
 }
 
 // Export singleton instance
-export default new ReferenceDataService();
+const referenceDataService = new ReferenceDataService();
+export default referenceDataService;

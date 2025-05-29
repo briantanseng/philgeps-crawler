@@ -19,12 +19,14 @@ This comprehensive migration script creates the complete database schema includi
 ## Usage
 
 ### Initial Setup
+
 ```bash
 # Run the migration to create/update schema
 node src/migrations/schema.js
 ```
 
 ### Clean Installation
+
 ```bash
 # Drop all tables and recreate (WARNING: This will delete all data!)
 node src/migrations/schema.js --clean
@@ -33,7 +35,9 @@ node src/migrations/schema.js --clean
 ## Database Structure
 
 ### Opportunities Table
+
 Stores comprehensive procurement opportunity data with ITB (Invitation to Bid) fields:
+
 - Basic information (reference number, title, procuring entity)
 - Procurement details (mode, classification, category)
 - Budget and timeline information
@@ -42,14 +46,18 @@ Stores comprehensive procurement opportunity data with ITB (Invitation to Bid) f
 - Metadata and timestamps
 
 ### Performance Optimizations
+
 The schema includes:
+
 - 11 single-column indexes for common filters
 - 6 composite indexes for multi-column queries
 - 1 partial index for budget queries
 - Strategic indexes on foreign keys and commonly queried fields
 
 ### Crawl History
+
 Tracks:
+
 - Crawl execution times
 - Number of opportunities found/updated
 - Error counts
@@ -72,6 +80,7 @@ Tracks:
 ## Inspection
 
 To inspect the database schema:
+
 ```bash
 # View all tables
 sqlite3 data/philgeps.db ".tables"

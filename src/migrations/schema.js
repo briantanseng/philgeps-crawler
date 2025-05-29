@@ -155,6 +155,7 @@ try {
       errors INTEGER DEFAULT 0,
       duration_seconds REAL,
       status TEXT,
+      error_message TEXT,
       page_range TEXT,
       fetch_details BOOLEAN DEFAULT 0
     );

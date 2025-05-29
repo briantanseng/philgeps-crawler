@@ -191,21 +191,7 @@ class PhilGEPSScraper {
           publish_date: publishDate,
           closing_date: closingDate,
           status: 'Open',
-          source_url: this.searchUrl,
-          detail_url: new URL(href, this.baseUrl).href,
-          // RFQ details - to be populated from detail page if needed
-          rfq_number: null,
-          delivery_period: null,
-          payment_terms: null,
-          procurement_mode: null,
-          funding_source: null,
-          area_of_delivery: null,
-          pre_bid_conference: null,
-          bid_submission_deadline: closingDate,
-          bid_opening_date: null,
-          technical_specifications: null,
-          eligibility_criteria: null,
-          additional_requirements: null
+          url: new URL(href, this.baseUrl).href
         };
         
         opportunities.push(opportunity);

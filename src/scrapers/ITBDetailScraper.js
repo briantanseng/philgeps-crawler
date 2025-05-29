@@ -115,24 +115,131 @@ class ITBDetailScraper {
               details.client_agency = value;
               break;
             case 'contact person':
-              // Parse contact information which may be concatenated
-              const contactLines = value.split(/(?=[A-Z][a-z]+\s+[A-Z])|(?=\d{2,})|(?=\w+@\w+\.\w+)/);
-              if (contactLines.length > 0) {
-                details.contact_person = contactLines[0].trim();
-                // Try to extract other contact details from the concatenated string
-                contactLines.forEach(line => {
-                  if (line.match(/^\d{2,}/)) {
-                    details.contact_phone = line.trim();
-                  } else if (line.match(/\w+@\w+\.\w+/)) {
-                    details.contact_email = line.trim();
-                  } else if (line.match(/Secretary|Chairman|Officer|Manager/i)) {
-                    details.contact_designation = line.trim();
-                  } else if (line.match(/City|Province|Barangay|Street/i) && !details.contact_address) {
-                    details.contact_address = line.trim();
+              // Enhanced parsing for contact information that may be concatenated
+              // Sometimes PhilGEPS concatenates all contact info in one field
+              let contactValue = value;
+              
+              // First, try to extract email if present
+              // Use a more restrictive pattern that doesn't match concatenated numbers
+              const emailMatch = contactValue.match(/([a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/);
+              if (emailMatch && !details.contact_email) {
+                details.contact_email = emailMatch[1];
+                // Remove email from value for further parsing
+                contactValue = contactValue.replace(emailMatch[0], ' ').trim();
+              }
+              
+              // Extract phone numbers (various formats)
+              const phonePatterns = [
+                /(\+?63[\s-]?\d{1,4}[\s-]?\d{3,4}[\s-]?\d{4})/,  // Philippine mobile
+                /(\(?\d{2,4}\)?[\s-]?\d{3,4}[\s-]?\d{4})/,        // Landline with area code
+                /(\d{3,4}[\s-]?\d{4})/,                            // Simple phone
+                /(09\d{9})/,                                        // Mobile starting with 09
+                /(\d{4}[\s-]?\d{4})/                                // 8-digit format
+              ];
+              
+              let phoneFound = false;
+              for (const pattern of phonePatterns) {
+                const phoneMatch = contactValue.match(pattern);
+                if (phoneMatch && !details.contact_phone) {
+                  details.contact_phone = phoneMatch[1].trim();
+                  phoneFound = true;
+                  // Remove phone from value
+                  contactValue = contactValue.replace(phoneMatch[0], ' ').trim();
+                  break;
+                }
+              }
+              
+              // Extract designation
+              const designationMatch = contactValue.match(/(Secretary|Chairman|Officer|Manager|Director|Head|Chief|Admin|Coordinator|Specialist|Assistant|BAC)/i);
+              if (designationMatch && !details.contact_designation) {
+                // Try to get the full designation phrase
+                const designationIndex = contactValue.indexOf(designationMatch[0]);
+                const beforeDesignation = contactValue.substring(0, designationIndex).trim();
+                const afterDesignation = contactValue.substring(designationIndex + designationMatch[0].length).trim();
+                
+                // Build full designation
+                let fullDesignation = designationMatch[0];
+                
+                // Check if there are modifiers before (like "BAC")
+                const beforeWords = beforeDesignation.split(/\s+/);
+                if (beforeWords.length <= 2 && beforeWords[beforeWords.length - 1].match(/^[A-Z]+$/)) {
+                  fullDesignation = beforeWords[beforeWords.length - 1] + ' ' + fullDesignation;
+                }
+                
+                // Check if there are modifiers after
+                const afterWords = afterDesignation.split(/\s+/);
+                if (afterWords.length > 0 && afterWords[0].match(/^(of|for|and|&)/i)) {
+                  // Include department/section info
+                  const deptMatch = afterDesignation.match(/^(of|for|and|&)\s+[\w\s]+?(Department|Division|Section|Unit|Office)/i);
+                  if (deptMatch) {
+                    fullDesignation += ' ' + deptMatch[0];
                   }
-                });
-              } else {
-                details.contact_person = value;
+                }
+                
+                details.contact_designation = fullDesignation.trim();
+                contactValue = contactValue.replace(fullDesignation, ' ').trim();
+              }
+              
+              // Extract address (if present)
+              const addressPatterns = [
+                /([\w\s,]+(?:City|Municipality|Province|Barangay|St\.|Street|Avenue|Road|Bldg\.|Building)[^,]*)/i,
+                /(\d+[A-Za-z]?\s+[\w\s]+(?:St\.|Street|Avenue|Road)[^,]*)/i
+              ];
+              
+              for (const pattern of addressPatterns) {
+                const addressMatch = contactValue.match(pattern);
+                if (addressMatch && !details.contact_address) {
+                  details.contact_address = addressMatch[1].trim();
+                  contactValue = contactValue.replace(addressMatch[0], ' ').trim();
+                  break;
+                }
+              }
+              
+              // Clean up remaining value for contact person name
+              // Remove any remaining location words that might be part of address
+              const locationWords = /(Barangay|Brgy\.|Municipality|City|Province|Philippines)/gi;
+              const locationMatch = contactValue.match(locationWords);
+              if (locationMatch && !details.contact_address) {
+                // Extract the full address if we haven't already
+                const addressStart = contactValue.indexOf(locationMatch[0]);
+                if (addressStart > 0) {
+                  const possibleAddress = contactValue.substring(addressStart);
+                  if (possibleAddress.length > 10) {
+                    details.contact_address = possibleAddress.trim();
+                    contactValue = contactValue.substring(0, addressStart).trim();
+                  }
+                }
+              }
+              
+              // Remove common job titles/positions that aren't part of the name
+              const titlePatterns = [
+                /\b(Computer Maintenance Technologist|Bookkeeper|Treasurer)\b/gi,
+                /\bBIDS AND AWARDS COMMITTEE\b/gi,
+                /\bBarangay\s+(Treasurer|Captain|Secretary)\b/gi
+              ];
+              
+              for (const pattern of titlePatterns) {
+                const titleMatch = contactValue.match(pattern);
+                if (titleMatch && !details.contact_designation) {
+                  details.contact_designation = titleMatch[0].trim();
+                }
+                contactValue = contactValue.replace(pattern, ' ').trim();
+              }
+              
+              // Remove common separators and clean up
+              contactValue = contactValue.replace(/[,;|\/\\]/g, ' ')
+                          .replace(/\s+/g, ' ')
+                          .trim();
+              
+              // Clean up any Roman numerals or common suffixes
+              contactValue = contactValue.replace(/\s+(Jr\.?|Sr\.?|III?|IV|V)$/i, (match) => match);
+              
+              // If we have a reasonable name left, use it
+              if (contactValue && contactValue.length > 2 && contactValue.length < 50) {
+                // Check if it looks like a name (has at least one capital letter and doesn't look like an address)
+                if (contactValue.match(/[A-Z]/) && !contactValue.match(/^\d+/) && !contactValue.match(/^(Pook|Street|Road|Avenue)/i)) {
+                  details.contact_person = contactValue;
+                }
               }
               break;
             case 'designation':
@@ -143,11 +250,77 @@ class ITBDetailScraper {
               break;
             case 'telephone no.':
             case 'telephone':
-              details.contact_phone = value;
+            case 'contact number':
+            case 'phone':
+              // Clean up phone number - remove extra spaces, normalize separators
+              let phone = value.trim();
+              
+              // Remove common prefixes
+              phone = phone.replace(/^(Tel\.|Telephone|Phone|Contact)\s*:?\s*/i, '');
+              
+              // Remove extension info
+              phone = phone.replace(/\s*(Ext|Extension|ext)\s*\.?\s*\d+.*/i, ' ').trim();
+              
+              // Remove email addresses that might be concatenated
+              phone = phone.replace(/[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/g, ' ').trim();
+              
+              // Remove website URLs
+              phone = phone.replace(/www\.[^\s]+/gi, ' ').trim();
+              
+              // Extract Philippine phone number patterns
+              const phoneExtractPatterns = [
+                /(\+?63[\s-]?\d{1,4}[\s-]?\d{3,4}[\s-]?\d{4})/,  // Philippine format with country code
+                /(\(0?\d{2,4}\)[\s-]?\d{3,4}[\s-]?\d{4})/,       // With area code in parentheses
+                /(0\d{2,4}[\s-]?\d{3,4}[\s-]?\d{4})/,             // With area code
+                /(09\d{9})/,                                         // Mobile starting with 09
+                /(\d{3,4}[\s-]?\d{4})/                              // Simple format
+              ];
+              
+              for (const pattern of phoneExtractPatterns) {
+                const phoneMatch = phone.match(pattern);
+                if (phoneMatch) {
+                  phone = phoneMatch[1].trim();
+                  break;
+                }
+              }
+              
+              // Normalize separators
+              phone = phone.replace(/[\s\-\.()]+/g, '-').trim();
+              
+              // Remove trailing non-digit characters
+              phone = phone.replace(/[^\d\+\-]+$/, '').trim();
+              
+              details.contact_phone = phone;
               break;
+              
             case 'e-mail address':
             case 'email':
-              details.contact_email = value;
+            case 'e-mail':
+            case 'email address':
+              // Extract email more carefully
+              let email = value.trim();
+              
+              // Remove common prefixes
+              email = email.replace(/^(Email|E-mail|Mail)\s*:?\s*/i, '');
+              
+              // Extract valid email using regex - must start with a letter
+              const emailPattern = /([a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/;
+              const match = email.match(emailPattern);
+              
+              if (match) {
+                details.contact_email = match[1].toLowerCase();
+              } else if (email.includes('@')) {
+                // Fallback - if it has @ symbol, try harder to extract just the email
+                // Remove extension info and www prefixes
+                email = email.replace(/^(Ext|Extension|ext)\.?\s*\d+/i, '').trim();
+                email = email.replace(/^www\./i, '').trim();
+                // Remove all numbers that appear before the first letter
+                email = email.replace(/^\d+[-\d]*/, '').trim();
+                const fallbackMatch = email.match(emailPattern);
+                if (fallbackMatch) {
+                  details.contact_email = fallbackMatch[1].toLowerCase();
+                }
+              }
               break;
             case 'bid supplements':
               details.bid_supplements = parseInt(value) || 0;

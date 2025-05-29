@@ -166,7 +166,9 @@ npm run test:coverage      # Generate coverage report
 # Crawler Operations
 npm run background:crawler  # Start background crawler service
 npm run crawl              # Run one-time crawl
-npm run crawl:all          # Crawl all pages with Puppeteer
+npm run crawl:all          # Crawl all pages with ITB details
+npm run crawl:resume       # Resume previous crawl from saved state
+npm run crawl:clean        # Clear state and start fresh crawl
 npm run migrate            # Run database migrations
 
 # Code Quality

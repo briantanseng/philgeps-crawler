@@ -18,6 +18,13 @@ npm run crawl
 - Puppeteer must be installed (`npm install`)
 - Chromium browser available (included in Docker image)
 
+### Features
+- **Automatic ITB Details Extraction**: The crawler now automatically fetches ITB (Invitation to Bid) details for each opportunity
+- **State Management**: Supports resuming interrupted crawls
+- **Batch Processing**: Processes opportunities in configurable batches
+- **Retry Logic**: Automatic retry with exponential backoff for failed requests
+- **Error Tracking**: Comprehensive error logging and recovery
+
 ### Full Page Range Crawling
 
 #### Default Crawl (10 pages)
@@ -36,6 +43,16 @@ npm run crawl:all 100       # Crawl pages 1-100
 npm run crawl:all 10 20     # Crawl pages 10-20
 npm run crawl:all 50 100    # Crawl pages 50-100
 npm run crawl:all 200 250   # Crawl pages 200-250
+```
+
+#### Resume Interrupted Crawl
+```bash
+npm run crawl:resume        # Resume from last saved state
+```
+
+#### Clear State and Start Fresh
+```bash
+npm run crawl:clean         # Clear previous state and start new crawl
 ```
 
 ## Crawling Strategies
@@ -107,18 +124,29 @@ CRAWL_END_PAGE=50
 
 # Auto-crawl on startup
 RUN_INITIAL_CRAWL=true
+
+# Crawler Configuration
+BATCH_SIZE=10                    # Process opportunities in batches
+MAX_RETRIES=3                    # Retry failed requests
+BASE_DELAY=2000                  # Base delay between requests (ms)
+MAX_JITTER=1000                  # Random jitter added to delays
+ITB_FETCH_DELAY=1500             # Delay between ITB detail fetches
+PAGE_CRAWL_TIMEOUT=60000         # Timeout for page crawl (ms)
+ITB_CRAWL_TIMEOUT=30000          # Timeout for ITB details (ms)
 ```
 
 ## Performance Considerations
 
-### Page Count Guidelines
+### Page Count Guidelines (with ITB Details)
 
 | Pages | Opportunities | Time | Memory | Use Case |
 |-------|--------------|------|--------|----------|
-| 1-10 | ~200 | 1-2 min | 500MB | Quick updates |
-| 10-50 | ~1,000 | 5-10 min | 1GB | Daily updates |
-| 50-100 | ~2,000 | 10-20 min | 1.5GB | Weekly updates |
-| 100-500 | ~10,000 | 30-60 min | 2GB | Full crawl |
+| 1-10 | ~200 | 2-5 min | 500MB | Quick updates |
+| 10-50 | ~1,000 | 10-25 min | 1GB | Daily updates |
+| 50-100 | ~2,000 | 25-50 min | 1.5GB | Weekly updates |
+| 100-500 | ~10,000 | 1-3 hours | 2GB | Full crawl |
+
+*Note: Times include ITB detail fetching with delays to respect server rate limits*
 
 ### Optimization Tips
 
@@ -132,7 +160,24 @@ RUN_INITIAL_CRAWL=true
 
 ### Check Crawl History
 ```sql
-SELECT * FROM crawl_history ORDER BY crawl_date DESC LIMIT 10;
+-- View recent crawls with ITB statistics
+SELECT 
+  crawl_date,
+  opportunities_found,
+  new_opportunities,
+  updated_opportunities,
+  itb_details_fetched,
+  errors,
+  duration_seconds,
+  page_range
+FROM crawl_history 
+ORDER BY crawl_date DESC 
+LIMIT 10;
+
+-- Check opportunities with ITB details
+SELECT COUNT(*) AS with_itb_details
+FROM opportunities 
+WHERE itb_solicitation_number IS NOT NULL;
 ```
 
 ### View Current Statistics
@@ -176,9 +221,11 @@ npm start | grep "Crawl"
 
 1. **Start small**: Test with 5-10 pages first
 2. **Monitor resources**: Watch CPU and memory usage
-3. **Handle failures**: Implement retry logic for failed pages
+3. **Use resume feature**: For large crawls, use `crawl:resume` to handle interruptions
 4. **Schedule wisely**: Avoid peak hours on target site
 5. **Keep logs**: Enable debug logging for troubleshooting
+6. **Batch size tuning**: Adjust BATCH_SIZE based on your system resources
+7. **Rate limiting**: Respect server limits with appropriate delays
 
 ## Advanced Usage
 

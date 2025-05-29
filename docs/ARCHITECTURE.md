@@ -179,9 +179,10 @@ philgeps-crawler/
 - Request throttling
 
 #### ITBDetailScraper
-- Detailed information extraction
-- Field mapping
-- Data validation
+- Integrated into main crawl process
+- Automatic ITB details extraction for each opportunity
+- Field mapping and validation
+- Retry logic with exponential backoff
 
 ## Data Flow Patterns
 
@@ -192,7 +193,7 @@ User Input → SearchForm → API Route → SearchService → Database → Forma
 
 ### 2. Crawl Flow
 ```
-Trigger → CrawlerService → PuppeteerScraper → Parse → Validate → Database → History
+Trigger → CrawlerService → PuppeteerScraper → Parse → ITBDetailScraper → Validate → Database → History
 ```
 
 ### 3. Real-time Updates

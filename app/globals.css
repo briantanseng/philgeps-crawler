@@ -17,3 +17,25 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+@layer utilities {
+  @keyframes slide-in-from-top {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-in {
+    animation-duration: 200ms;
+    animation-fill-mode: both;
+  }
+  
+  .slide-in-from-top-2 {
+    animation-name: slide-in-from-top;
+  }
+}

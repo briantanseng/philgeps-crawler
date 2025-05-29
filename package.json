@@ -15,7 +15,6 @@
     "crawl:all": "node src/crawl-all.js",
     "crawl:resume": "node src/crawl-all.js --resume",
     "crawl:clean": "node src/crawl-all.js --clean",
-    "crawl:itb": "node src/crawl-itb-details.js",
     "test": "jest",
     "test:unit": "jest --testPathPattern=tests/unit",
     "test:integration": "jest --testPathPattern=tests/integration",

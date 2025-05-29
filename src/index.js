@@ -60,9 +60,9 @@ class PhilGEPSApp {
     // Serve static files for simple web UI
     this.app.use(express.static('public'));
     
-    // Redirect root to the table version
+    // Redirect root to the TanStack table version
     this.app.get('/', (req, res) => {
-      res.redirect('/index-table.html');
+      res.redirect('/index-tanstack.html');
     });
 
     // Health check endpoint

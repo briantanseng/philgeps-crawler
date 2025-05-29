@@ -406,10 +406,16 @@
         /* ITB Details */
         .itb-details {
             background-color: #f9fafb;
-            padding: 15px;
+            padding: 20px;
+            margin: 10px;
             border-radius: 4px;
-            margin-top: 10px;
             font-size: 0.85rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .expanded-row td {
+            padding: 0 !important;
+            background-color: #f3f4f6;
         }
         
         .itb-grid {
@@ -435,20 +441,19 @@
         
         /* Expand/Collapse Button */
         .expand-btn {
-            background: none;
-            border: none;
+            background: #e0e7ff;
+            border: 1px solid #c7d2fe;
             color: #1e3a8a;
             cursor: pointer;
             padding: 4px 8px;
             font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
         
         .expand-btn:hover {
-            background-color: #e0e7ff;
-            border-radius: 4px;
+            background-color: #c7d2fe;
+            border-color: #a5b4fc;
         }
         
         /* Pagination */
@@ -725,7 +730,7 @@
         const API_BASE = '/api';
         let currentData = [];
         let table = null;
-        let expandedRows = new Set();
+        let expandedState = {};
 
         // Table columns definition
         const columns = [
@@ -733,14 +738,14 @@
                 id: 'expander',
                 header: () => '',
                 cell: ({ row }) => {
-                    if (!row.original.hasItbDetails) return null;
-                    return `
-                        <button class="expand-btn" onclick="toggleRow(${row.index})">
-                            ${expandedRows.has(row.index) ? '▼' : '▶'} Details
-                        </button>
-                    `;
+                    if (!row.original.hasItbDetails) return '';
+                    return row.getCanExpand()
+                        ? `<button class="expand-btn" onclick="toggleRow('${row.id}')">
+                            ${row.getIsExpanded() ? '▼' : '▶'}
+                          </button>`
+                        : '';
                 },
-                size: 80,
+                size: 60,
                 enableSorting: false,
             },
             {
@@ -831,7 +836,16 @@
             await loadCrawlerStatus();
             setupEventListeners();
             setupCrawlerStatusInterval();
-            window.toggleRow = toggleRow;
+            
+            // Expose functions to window
+            window.toggleRow = (rowId) => {
+                if (table) {
+                    const row = table.getRow(rowId);
+                    if (row) {
+                        row.toggleExpanded();
+                    }
+                }
+            };
             window.refreshStatistics = refreshStatistics;
             window.exportResults = exportResults;
             window.toggleCrawler = toggleCrawler;
@@ -957,7 +971,7 @@
 
         // Create TanStack Table
         function createDataTable() {
-            expandedRows.clear();
+            expandedState = {}; // Reset expanded state
             
             table = createTable({
                 data: currentData,
@@ -966,6 +980,17 @@
                 getPaginationRowModel: getPaginationRowModel(),
                 getSortedRowModel: getSortedRowModel(),
                 getExpandedRowModel: getExpandedRowModel(),
+                getRowCanExpand: (row) => row.original.hasItbDetails,
+                state: {
+                    expanded: expandedState,
+                },
+                onExpandedChange: (updater) => {
+                    expandedState = typeof updater === 'function' 
+                        ? updater(expandedState)
+                        : updater;
+                    table.options.state.expanded = expandedState;
+                    renderTable();
+                },
                 initialState: {
                     pagination: {
                         pageSize: 20,
@@ -1015,20 +1040,23 @@
                             `).join('')}
                         </thead>
                         <tbody>
-                            ${table.getRowModel().rows.map(row => `
-                                <tr>
-                                    ${row.getVisibleCells().map(cell => `
-                                        <td>${flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-                                    `).join('')}
-                                </tr>
-                                ${expandedRows.has(row.index) ? `
+                            ${table.getRowModel().rows.map(row => {
+                                const rowHtml = `
                                     <tr>
-                                        <td colspan="${columns.length}">
-                                            ${renderItbDetails(row.original)}
-                                        </td>
+                                        ${row.getVisibleCells().map(cell => `
+                                            <td>${flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                                        `).join('')}
                                     </tr>
-                                ` : ''}
-                            `).join('')}
+                                    ${row.getIsExpanded() && row.original.hasItbDetails ? `
+                                        <tr class="expanded-row">
+                                            <td colspan="${columns.length}">
+                                                ${renderItbDetails(row.original)}
+                                            </td>
+                                        </tr>
+                                    ` : ''}
+                                `;
+                                return rowHtml;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -1132,6 +1160,12 @@
                                 <div class="itb-value">${opportunity.classification}</div>
                             </div>
                         ` : ''}
+                        ${opportunity.funding_source ? `
+                            <div class="itb-item">
+                                <div class="itb-label">Funding Source</div>
+                                <div class="itb-value">${opportunity.funding_source}</div>
+                            </div>
+                        ` : ''}
                         ${opportunity.delivery_period ? `
                             <div class="itb-item">
                                 <div class="itb-label">Delivery Period</div>
@@ -1184,22 +1218,14 @@
                     ${opportunity.description ? `
                         <div style="margin-top: 15px;">
                             <div class="itb-label">Description</div>
-                            <div class="itb-value" style="margin-top: 5px;">${opportunity.description}</div>
+                            <div class="itb-value" style="margin-top: 8px; white-space: pre-wrap;">${opportunity.description}</div>
                         </div>
                     ` : ''}
                 </div>
             `;
         }
 
-        // Table interaction functions
-        window.toggleRow = function(rowIndex) {
-            if (expandedRows.has(rowIndex)) {
-                expandedRows.delete(rowIndex);
-            } else {
-                expandedRows.add(rowIndex);
-            }
-            renderTable();
-        };
+        // Remove old toggleRow implementation since it's now in init()
 
         window.sortColumn = function(columnId) {
             table.getColumn(columnId).toggleSorting();

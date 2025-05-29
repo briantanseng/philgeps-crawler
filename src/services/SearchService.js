@@ -69,12 +69,28 @@ class SearchService {
     const now = new Date();
     const daysUntilClosing = Math.ceil((closingDate - now) / (1000 * 60 * 60 * 24));
     
+    // Check if opportunity has ITB details
+    const hasItbDetails = !!(
+      opportunity.procurement_mode ||
+      opportunity.funding_source ||
+      opportunity.delivery_period ||
+      opportunity.contact_person ||
+      opportunity.contact_email ||
+      opportunity.contact_phone ||
+      opportunity.pre_bid_conference ||
+      opportunity.bid_documents_fee ||
+      opportunity.bid_submission_deadline ||
+      opportunity.bid_opening_date ||
+      opportunity.description
+    );
+    
     return {
       ...opportunity,
       formatted_budget: this.formatCurrency(opportunity.approved_budget, opportunity.currency),
       days_until_closing: daysUntilClosing,
       is_closing_soon: daysUntilClosing <= 7 && daysUntilClosing >= 0,
-      is_expired: daysUntilClosing < 0
+      is_expired: daysUntilClosing < 0,
+      hasItbDetails: hasItbDetails
     };
   }
 

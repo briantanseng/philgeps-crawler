@@ -13,6 +13,7 @@ interface Stats {
 export default function Statistics() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadStatistics();
@@ -23,13 +24,28 @@ export default function Statistics() {
 
   const loadStatistics = async () => {
     try {
+      setError(null);
       const response = await fetch('/api/statistics');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch statistics: ${response.status} ${response.statusText}`);
+      }
       const data = await response.json();
       if (data.success) {
         setStats(data.data);
+      } else {
+        console.error('Statistics API error:', data.error);
+        setError(data.error || 'Failed to load statistics');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load statistics:', error);
+      setError(error.message || 'Failed to load statistics');
+      // Set default values on error
+      setStats({
+        total: 0,
+        active: 0,
+        categories: 0,
+        entities: 0
+      });
     } finally {
       setLoading(false);
     }
@@ -65,6 +81,12 @@ export default function Statistics() {
           Refresh
         </button>
       </div>
+
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-700">Error loading statistics: {error}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-gray-50 p-6 rounded-lg text-center">

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Statistics from '@/components/Statistics';
-import CrawlerControl from '@/components/CrawlerControl';
 import SearchForm from '@/components/SearchForm';
 import OpportunitiesTable from '@/components/OpportunitiesTable';
 import { FormattedOpportunity } from '@/lib/services/searchService';
@@ -46,9 +45,6 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="space-y-8">
-        {/* Crawler Control Section */}
-        <CrawlerControl />
-        
         {/* Statistics Section */}
         <Statistics />
         
